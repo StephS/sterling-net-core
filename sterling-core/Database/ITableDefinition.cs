@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Sterling.Core.Indexes;
 using Sterling.Core.Keys;
@@ -25,7 +26,7 @@ namespace Sterling.Core.Database
         /// <summary>
         ///     Indexes
         /// </summary>
-        Dictionary<string, IIndexCollection> Indexes { get; }
+        ConcurrentDictionary<string, IIndexCollection> Indexes { get; }
 
         /// <summary>
         ///     Table type

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,7 +32,7 @@ namespace Sterling.Core.Indexes
         {
             IndexList.Clear();
 
-            foreach (var index in Driver.DeserializeIndex<TKey, TIndex1, TIndex2>(typeof(T), Name) ?? new Dictionary<TKey, Tuple<TIndex1, TIndex2>>())
+            foreach (var index in Driver.DeserializeIndex<TKey, TIndex1, TIndex2>(typeof(T), Name) ?? new ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>>())
             {
                 IndexList.Add(new TableIndex<T, TIndex1, TIndex2, TKey>(index.Value.Item1, index.Value.Item2, index.Key, Resolver));
             }
@@ -42,7 +43,11 @@ namespace Sterling.Core.Indexes
         /// </summary>
         protected override void SerializeIndexes()
         {
-            var dictionary = IndexList.ToDictionary(item => item.Key, item => Tuple.Create(item.Index.Item1, item.Index.Item2));
+            //var dictionary = IndexList.ToDictionary(item => item.Key, item => Tuple.Create(item.Index.Item1, item.Index.Item2));
+
+            var kvp = IndexList.Select(item => new KeyValuePair<TKey, Tuple<TIndex1, TIndex2>>(item.Key, Tuple.Create(item.Index.Item1, item.Index.Item2)));
+            var dictionary = new ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>>(kvp);
+
             Driver.SerializeIndex(typeof(T), Name, dictionary);
         }
         

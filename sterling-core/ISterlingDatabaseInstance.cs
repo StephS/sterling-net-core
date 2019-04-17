@@ -1,19 +1,21 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using Sterling.Core.Database;
 using Sterling.Core.Events;
 using Sterling.Core.Indexes;
 using Sterling.Core.Keys;
 using Sterling.Core.Serialization;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sterling.Core
 {
     /// <summary>
     ///     The sterling database instance
     /// </summary>
-    public interface ISterlingDatabaseInstance : ISterlingLock 
+    public interface ISterlingDatabaseInstance : ISterlingLock
     {
         /// <summary>
         ///     The driver
@@ -26,7 +28,7 @@ namespace Sterling.Core
         ///     Register a trigger
         /// </summary>
         /// <param name="trigger">The trigger</param>
-        void RegisterTrigger<T,TKey>(BaseSterlingTrigger<T, TKey> trigger) where T : class, new();
+        void RegisterTrigger<T, TKey>(BaseSterlingTrigger<T, TKey> trigger) where T : class, new();
 
         /// <summary>
         /// Registers the byte stream interceptor
@@ -66,7 +68,7 @@ namespace Sterling.Core
         /// </summary>
         /// <param name="instance">The instance</param>
         /// <returns>True if it can be persisted</returns>
-        bool IsRegistered<T>(T instance) where T : class;        
+        bool IsRegistered<T>(T instance) where T : class;
 
         /// <summary>
         ///     Non-generic registration check
@@ -89,23 +91,8 @@ namespace Sterling.Core
         /// <returns>The key type</returns>
         Type GetKeyType(Type table);
 
-        
-        /// <summary>
-        ///     Save it
-        /// </summary>
-        /// <typeparam name="T">The instance type</typeparam>
-        /// <typeparam name="TKey">Save it</typeparam>
-        /// <param name="instance">The instance</param>
-        TKey Save<T, TKey>(T instance) where T : class, new();
 
-        /// <summary>
-        ///     Save a sub-class under a base class table definition
-        /// </summary>
-        /// <typeparam name="T">The table type</typeparam>
-        /// <typeparam name="TKey">Save it</typeparam>
-        /// <param name="instance">An instance or sub-class of the table type</param>
-        /// <returns></returns>
-        TKey SaveAs<T, TKey>(T instance) where T : class,new();
+
 
         /// <summary>
         ///     Query (keys only)
@@ -138,12 +125,37 @@ namespace Sterling.Core
             where T : class, new();
 
         /// <summary>
+        ///     Save it
+        /// </summary>
+        /// <typeparam name="T">The instance type</typeparam>
+        /// <typeparam name="TKey">Save it</typeparam>
+        /// <param name="instance">The instance</param>
+        bool Save<T, TKey>(T instance, out TKey key) where T : class, new();
+
+        /// <summary>
+        ///     Save a sub-class under a base class table definition
+        /// </summary>
+        /// <typeparam name="T">The table type</typeparam>
+        /// <typeparam name="TKey">Save it</typeparam>
+        /// <param name="instance">An instance or sub-class of the table type</param>
+        /// <returns></returns>
+        bool SaveAs<T, TKey>(T instance, out TKey key) where T : class, new();
+
+        /// <summary>
         ///     Save it (no knowledge of key)
         /// </summary>
         /// <typeparam name="T">The type</typeparam>
         /// <param name="instance">The instance</param>
         /// <returns>The key</returns>
-        object Save<T>(T instance) where T : class, new();
+        bool Save<T>(T instance) where T : class, new();
+
+        /// <summary>
+        ///     Save it (no knowledge of key)
+        /// </summary>
+        /// <typeparam name="T">The type</typeparam>
+        /// <param name="instance">The instance</param>
+        /// <returns>The key</returns>
+        bool Save<T>(T instance, out object key) where T : class, new();
 
         /// <summary>
         ///     Save a sub-class under a base class table definition
@@ -151,7 +163,7 @@ namespace Sterling.Core
         /// <typeparam name="T">The table type</typeparam>
         /// <param name="instance">The instance or sub-class of the table type</param>
         /// <returns></returns>
-        object SaveAs<T>(T instance) where T : class,new();
+        bool SaveAs<T>(T instance, out object key) where T : class, new();
 
         /// <summary>
         ///     Save when key is not known
@@ -161,7 +173,7 @@ namespace Sterling.Core
         /// <param name="instance">The instance</param>
         /// <param name="cache">The cycle cache</param>
         /// <returns>The key</returns>
-        object Save(Type actualType, Type tableType, object instance, CycleCache cache);
+        bool Save(Type actualType, Type tableType, object instance, CycleCache cache, out object key);
 
         /// <summary>
         ///     Save when key is not known
@@ -169,7 +181,7 @@ namespace Sterling.Core
         /// <param name="type">The type to save</param>
         /// <param name="instance">The instance</param>
         /// <returns>The key</returns>
-        object Save(Type type, object instance);
+        bool Save(Type type, object instance, out object key);
 
         /// <summary>
         ///     Save when key is not known
@@ -177,7 +189,7 @@ namespace Sterling.Core
         /// <param name="type">The table type to save against</param>
         /// <param name="instance">The instance</param>
         /// <returns>The key</returns>
-        object SaveAs(Type type, object instance);
+        bool SaveAs(Type type, object instance, out object key);
 
         /// <summary>
         ///     Save asynchronously
@@ -185,19 +197,35 @@ namespace Sterling.Core
         /// <typeparam name="T">The type to save</typeparam>
         /// <param name="list">A list of items to save</param>
         /// <returns>A unique identifier for the batch</returns>
-        BackgroundWorker SaveAsync<T>(IList<T> list);
+        Task<IList<object>> SaveAsync<T>(IList<T> list);
+        /// <summary>
+        ///     Save asynchronously
+        /// </summary>
+        /// <typeparam name="T">The type to save</typeparam>
+        /// <param name="list">A list of items to save</param>
+        /// <param name="cancellationTokenSource">CancellationTokenSource when activated cancels the save</param>
+        /// <returns>A unique identifier for the batch</returns>
+        Task<IList<object>> SaveAsync<T>(IList<T> list, CancellationTokenSource cancellationTokenSource);
 
         /// <summary>
         ///     Non-generic asynchronous save
         /// </summary>
         /// <param name="list">The list of items</param>
         /// <returns>A unique job identifier</returns>
-        BackgroundWorker SaveAsync(IList list);
+        Task<IList<object>> SaveAsync(IList list);
+
+        /// <summary>
+        ///     Non-generic asynchronous save
+        /// </summary>
+        /// <param name="list">The list of items</param>
+        /// <param name="cancellationTokenSource">CancellationTokenSource when activated cancels the save</param>
+        /// <returns>A unique job identifier</returns>
+        Task<IList<object>> SaveAsync(IList list, CancellationTokenSource cancellationTokenSource = default(CancellationTokenSource));
 
         /// <summary>
         ///     Flush all keys and indexes to storage
         /// </summary>
-        void Flush();        
+        void Flush();
 
         /// <summary>
         ///     Load it 
@@ -259,6 +287,26 @@ namespace Sterling.Core
         void Purge();
 
         /// <summary>
+        ///     Purge the entire database - wipe it clean!
+        /// </summary>
+        /// <param name="millisecondsTimeout">Timeout to wait for running tasks</param>
+        void Purge(int millisecondsTimeout);
+
+        /// <summary>
+        ///     Purge the entire database - wipe it clean!
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token to halt cancelling running tasks</param>
+        void Purge(CancellationToken cancellationToken);
+
+        /// <summary>
+        ///     Purge the entire database - wipe it clean!
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token to halt cancelling running tasks</param>
+        /// <param name="millisecondsTimeout">Timeout to wait for running tasks</param>
+        void Purge(CancellationToken cancellationToken, int millisecondsTimeout);
+
+
+        /// <summary>
         ///     Refresh indexes and keys from disk
         /// </summary>
         void Refresh();
@@ -276,6 +324,12 @@ namespace Sterling.Core
         /// <param name="keyFunction">Function to return the key</param>
         /// <returns>The table definition</returns>
         ITableDefinition CreateTableDefinition<T, TKey>(Func<T, TKey> keyFunction) where T : class, new();
+
+        /// <summary>
+        ///     Get the table definition for instance
+        /// </summary>
+        /// <returns>The definitions, null if none found</returns>
+        ITableDefinition GetTableDefinition(object instance);
 
         /// <summary>
         ///     Get the list of table definitions

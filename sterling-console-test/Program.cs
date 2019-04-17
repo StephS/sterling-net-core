@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Sterling.Core;
+using System;
 using System.Linq;
-using Sterling.Core;
 
 namespace Sterling.CmdLine.Test
 {
@@ -15,7 +15,7 @@ namespace Sterling.CmdLine.Test
             db.RegisterTrigger(new GuidTrigger<CoolColor>());
             CoolDatabase.PopulateDatabase(db);
             var colorList = db.Query<CoolColor, Guid>().OrderBy(c => c.LazyValue.Value.Name).Select(c => c.LazyValue.Value).ToList();
-            foreach(var color in colorList) 
+            foreach (var color in colorList)
             {
                 Console.WriteLine($"Loaded color {color.Name} with database-generated key {color.Id}.");
             }
@@ -24,7 +24,7 @@ namespace Sterling.CmdLine.Test
             var query1 = DateTime.UtcNow;
             var combos = db.Query<Combo, int>().Where(c => c.LazyValue.Value.Color.Id == colorList[idx].Id).Select(c => c.LazyValue.Value);
             var comboList = combos.Select(c => $"{c.Color.Name} {c.Planet.Name} {c.Cat.Name}");
-            foreach(var combo in comboList.OrderBy(c => c)) 
+            foreach (var combo in comboList.OrderBy(c => c))
             {
                 Console.WriteLine($"Found awesome combo {combo}.");
             }
@@ -34,7 +34,7 @@ namespace Sterling.CmdLine.Test
             // using index
             var combosIdx = db.Query<Combo, Guid, Tuple<string, string>, int>("Cats and Planets").Where(c => c.Index.Item1 == colorList[idx].Id)
                 .Select(c => $"{colorList[idx].Name} {c.Index.Item2.Item1} {c.Index.Item2.Item2}");
-            foreach(var comboText in combosIdx) 
+            foreach (var comboText in combosIdx)
             {
                 Console.WriteLine($"Found awesome combo {comboText}.");
             }

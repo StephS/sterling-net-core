@@ -1,20 +1,21 @@
+using Sterling.Core.Database;
+using Sterling.Core.Serialization;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Sterling.Core.Database;
-using Sterling.Core.Serialization;
 
 namespace Sterling.Core
 {
     /// <summary>
     ///     Default in-memory driver
     /// </summary>
-    public class MemoryDriver : BaseDriver 
+    public class MemoryDriver : BaseDriver
     {
         public MemoryDriver()
-        {            
+        {
         }
 
         public MemoryDriver(string databaseName, ISterlingSerializer serializer, Action<SterlingLogLevel, string, Exception> log) : base(databaseName, serializer, log)
@@ -24,17 +25,17 @@ namespace Sterling.Core
         /// <summary>
         ///     Keys
         /// </summary>
-        private readonly Dictionary<Type, object> _keyCache = new Dictionary<Type, object>();
+        private readonly ConcurrentDictionary<Type, object> _keyCache = new ConcurrentDictionary<Type, object>();
 
         /// <summary>
         ///     Indexes
         /// </summary>
-        private readonly Dictionary<Type, Dictionary<string, object>> _indexCache = new Dictionary<Type, Dictionary<string, object>>();
+        private readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, object>> _indexCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, object>>();
 
         /// <summary>
         ///     Objects
         /// </summary>
-        private readonly Dictionary<Tuple<string,int>, byte[]> _objectCache = new Dictionary<Tuple<string,int>, byte[]>();
+        private readonly ConcurrentDictionary<Tuple<string, int>, byte[]> _objectCache = new ConcurrentDictionary<Tuple<string, int>, byte[]>();
 
         /// <summary>
         ///     Serialize the keys
@@ -44,10 +45,10 @@ namespace Sterling.Core
         /// <param name="keyMap">Key map</param>
         public override void SerializeKeys(Type type, Type keyType, IDictionary keyMap)
         {
-            lock (((ICollection)_keyCache).SyncRoot)
-            {
-                _keyCache[type] = keyMap;
-            }
+            //lock (((ICollection)_keyCache).SyncRoot)
+            //{
+            this._keyCache[type] = keyMap;
+            //}
         }
 
         /// <summary>
@@ -59,10 +60,7 @@ namespace Sterling.Core
         /// <returns>The keys without the template</returns>
         public override IDictionary DeserializeKeys(Type type, Type keyType, IDictionary template)
         {
-            lock (((ICollection)_keyCache).SyncRoot)
-            {
-                return _keyCache.ContainsKey(type) ? _keyCache[type] as IDictionary : template;
-            }
+            return this._keyCache.ContainsKey(type) ? this._keyCache[type] as IDictionary : template;
         }
 
         /// <summary>
@@ -73,18 +71,13 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>
-        public override void SerializeIndex<TKey, TIndex>(Type type, string indexName, Dictionary<TKey, TIndex> indexMap)
+        public override void SerializeIndex<TKey, TIndex>(Type type, string indexName, ConcurrentDictionary<TKey, TIndex> indexMap)
         {
-            lock(((ICollection)_indexCache).SyncRoot)
-            {
-                if (!_indexCache.ContainsKey(type))
-                {
-                    _indexCache.Add(type, new Dictionary<string, object>());
-                }
+            var indexCache = this._indexCache.GetOrAdd(type, x => new ConcurrentDictionary<string, object>());
 
-                var indexCache = _indexCache[type];
-                indexCache[indexName] = indexMap; 
-            }
+            //var indexCache = _indexCache[type];
+
+            indexCache[indexName] = indexMap;
         }
 
         /// <summary>
@@ -96,18 +89,26 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>        
-        public override void SerializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName, Dictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap)
+        public override void SerializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName, ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap)
         {
+            var indexCache = this._indexCache.GetOrAdd(type, x => new ConcurrentDictionary<string, object>());
+
+            //var indexCache = _indexCache[type];
+
+            indexCache[indexName] = indexMap;
+            /*
+
             lock (((ICollection)_indexCache).SyncRoot)
             {
                 if (!_indexCache.ContainsKey(type))
                 {
-                    _indexCache.Add(type, new Dictionary<string, object>());
+                    _indexCache.Add(type, new ConcurrentDictionary<string, object>());
                 }
 
                 var indexCache = _indexCache[type];
                 indexCache[indexName] = indexMap;
             }
+            */
         }
 
         /// <summary>
@@ -118,20 +119,16 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>        
         /// <returns>The index map</returns>
-        public override Dictionary<TKey, TIndex> DeserializeIndex<TKey, TIndex>(Type type, string indexName)
+        public override ConcurrentDictionary<TKey, TIndex> DeserializeIndex<TKey, TIndex>(Type type, string indexName)
         {
-            lock (((ICollection)_indexCache).SyncRoot)
+            if (this._indexCache.TryGetValue(type, out ConcurrentDictionary<string, object> indexCache))
             {
-                if (!_indexCache.ContainsKey(type))
-                    return null;
-
-                var indexCache = _indexCache[type];
-
-                if (!indexCache.ContainsKey(indexName))
-                    return null;
-
-                return indexCache[indexName] as Dictionary<TKey, TIndex>;
+                if (indexCache.TryGetValue(indexName, out object result))
+                {
+                    return result as ConcurrentDictionary<TKey, TIndex>;
+                }
             }
+            return null;
         }
 
         /// <summary>
@@ -143,27 +140,23 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>        
         /// <returns>The index map</returns>        
-        public override Dictionary<TKey, Tuple<TIndex1, TIndex2>> DeserializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName)
+        public override ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>> DeserializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName)
         {
-            lock (((ICollection)_indexCache).SyncRoot)
+            if (this._indexCache.TryGetValue(type, out ConcurrentDictionary<string, object> indexCache))
             {
-                if (!_indexCache.ContainsKey(type))
-                    return null;
-
-                var indexCache = _indexCache[type];
-
-                if (!indexCache.ContainsKey(indexName))
-                    return null;
-
-                return indexCache[indexName] as Dictionary<TKey, Tuple<TIndex1, TIndex2>>;
+                if (indexCache.TryGetValue(indexName, out object result))
+                {
+                    return result as ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>>;
+                }
             }
+            return null;
         }
 
         /// <summary>
         ///     Publish the list of tables
         /// </summary>
         /// <param name="tables">The list of tables</param>
-        public override void PublishTables(Dictionary<Type, ITableDefinition> tables)
+        public override void PublishTables(ConcurrentDictionary<Type, ITableDefinition> tables)
         {
             return;
         }
@@ -185,10 +178,7 @@ namespace Sterling.Core
         public override void Save(Type type, int keyIndex, byte[] bytes)
         {
             var key = Tuple.Create(type.FullName, keyIndex);
-            lock(((ICollection)_objectCache).SyncRoot)
-            {
-                _objectCache[key] = bytes;
-            }
+            this._objectCache[key] = bytes;
         }
 
         /// <summary>
@@ -201,10 +191,8 @@ namespace Sterling.Core
         {
             var key = Tuple.Create(type.FullName, keyIndex);
             byte[] bytes;
-            lock(((ICollection)_objectCache).SyncRoot)
-            {
-                bytes = _objectCache[key];
-            }
+
+            bytes = this._objectCache[key];
 
             var memStream = new MemoryStream(bytes);
             return new BinaryReader(memStream);
@@ -218,13 +206,8 @@ namespace Sterling.Core
         public override void Delete(Type type, int keyIndex)
         {
             var key = Tuple.Create(type.FullName, keyIndex);
-            lock(((ICollection)_objectCache).SyncRoot)
-            {
-                if (_objectCache.ContainsKey(key))
-                {
-                    _objectCache.Remove(key);
-                }
-            }
+
+            this._objectCache.TryRemove(key, out byte[] throwaway);
         }
 
         /// <summary>
@@ -234,31 +217,26 @@ namespace Sterling.Core
         public override void Truncate(Type type)
         {
             var typeString = type.FullName;
-            lock (((ICollection)_objectCache).SyncRoot)
-            {
-                var keys = from key in _objectCache.Keys where key.Item1.Equals(typeString) select key;
-                foreach(var key in keys.ToList())
-                {
-                    _objectCache.Remove(key);
-                }
-                
-                lock (((ICollection)_indexCache).SyncRoot)
-                {
-                    var indexes = from index in _indexCache.Keys where _indexCache.ContainsKey(type) select index;
-                    foreach(var index in indexes.ToList())
-                    {
-                        _indexCache.Remove(index);
-                    }
-                }
 
-                lock (((ICollection)_keyCache).SyncRoot)
-                {
-                    if (_keyCache.ContainsKey(type))
-                    {
-                        _keyCache.Remove(type);
-                    }
-                }
-            }                      
+            var keys = from key in this._objectCache.Keys where key.Item1.Equals(typeString) select key;
+
+            byte[] throwawaybyte;
+            foreach (var key in keys.ToList())
+            {
+                this._objectCache.TryRemove(key, out throwawaybyte);
+            }
+
+            var indexes = from index in this._indexCache.Keys where this._indexCache.ContainsKey(type) select index;
+
+            ConcurrentDictionary<string, object> ThrowawayCD;
+
+            foreach (var index in indexes.ToList())
+            {
+                this._indexCache.TryRemove(index, out ThrowawayCD);
+            }
+
+            this._keyCache.TryRemove(type, out object throwaway);
+
         }
 
         /// <summary>
@@ -266,8 +244,8 @@ namespace Sterling.Core
         /// </summary>
         public override void Purge()
         {
-            var types = from key in _keyCache.Keys select key;
-            foreach(var type in types.ToList())
+            var types = from key in this._keyCache.Keys select key;
+            foreach (var type in types.ToList())
             {
                 Truncate(type);
             }

@@ -11,9 +11,10 @@ namespace UsdaSterling
         public void Import<T>(T[] items) where T: class, new()
         {
             Console.Write($"Importing {items.Length} items. This may take several minutes.");
-            var done = false;
+            //var done = false;
             var bg = UsdaDatabase.Current.SaveAsync((IList<T>) items);
-            var pct = 0;
+            //var pct = 0;
+            /*
             bg.WorkerReportsProgress = true;
             bg.ProgressChanged += (o, p) => {
                 if (pct != p.ProgressPercentage) {
@@ -23,8 +24,9 @@ namespace UsdaSterling
             };
             bg.RunWorkerCompleted += (a, b) => done = true;
             bg.RunWorkerAsync();
+            */
             var sleep = 100;
-            while (!done)
+            while (!bg.IsCompleted)
             {
                 Thread.Sleep(sleep);
                 if (sleep < 1000) {
@@ -32,6 +34,33 @@ namespace UsdaSterling
                 }
                 Console.Write(".");
             }
+
+            Console.WriteLine(" Faulted!: " + bg.IsFaulted);
+            if (bg.Exception != null)
+            {
+                Console.WriteLine(bg.Exception.ToString());
+                // Get stack trace for the exception with source file information
+                var st = new System.Diagnostics.StackTrace(bg.Exception, true);
+                //Get the first stack frame
+                System.Diagnostics.StackFrame frame = st.GetFrame(0);
+
+                //Get the file name
+                string fileName = frame.GetFileName();
+
+                //Get the method name
+                string methodName = frame.GetMethod().Name;
+
+                //Get the line number from the stack frame
+                int line = frame.GetFileLineNumber();
+
+                //Get the column number
+                int col = frame.GetFileColumnNumber();
+                Console.WriteLine(fileName);
+                Console.WriteLine(methodName);
+                Console.WriteLine(line);
+                Console.WriteLine(col);
+            }
+
             bg.Dispose();
             Console.WriteLine();
             Console.WriteLine($"Successfully imported {Count<T>()} documents. Your collection is ready!");

@@ -21,8 +21,8 @@ namespace UsdaSterling
 
             var query = from n in UsdaDatabase.Current.Query<Nutrient, double, string>(UsdaDatabase.NutrientIndex)
                         join fi in UsdaDatabase.Current.Query<FoodItem, string>()
-                            on n.Key.Split("|")[0] equals fi.Key
-                        where n.Key.Split("|")[1] == "203" // protein
+                            on (n.Key.Split('|')[0]).ToString() equals fi.Key
+                        where n.Key.Split('|')[1].ToString() == "203" // protein
                         orderby n.Index descending
                         select Tuple.Create(fi, n.Index);
             foreach (var item in query.Take(20))
@@ -35,8 +35,8 @@ namespace UsdaSterling
 
             query = from n in UsdaDatabase.Current.Query<Nutrient, double, string>(UsdaDatabase.NutrientIndex)
                         join fi in UsdaDatabase.Current.Query<FoodItem, string>()
-                            on n.Key.Split("|")[0] equals fi.Key
-                        where n.Key.Split("|")[1] == "204" // carbohydate
+                            on n.Key.Split('|')[0] equals fi.Key
+                        where n.Key.Split('|')[1] == "204" // carbohydate
                         orderby n.Index descending
                         select Tuple.Create(fi, n.Index);
             foreach (var item in query.Take(20))
@@ -49,8 +49,8 @@ namespace UsdaSterling
 
             query = from n in UsdaDatabase.Current.Query<Nutrient, double, string>(UsdaDatabase.NutrientIndex)
                         join fi in UsdaDatabase.Current.Query<FoodItem, string>()
-                            on n.Key.Split("|")[0] equals fi.Key
-                        where n.Key.Split("|")[1] == "205" // fat
+                            on n.Key.Split('|')[0] equals fi.Key
+                        where n.Key.Split('|')[1] == "205" // fat
                         orderby n.Index descending
                         select Tuple.Create(fi, n.Index);
             foreach (var item in query.Take(20))

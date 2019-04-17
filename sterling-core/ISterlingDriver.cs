@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using Sterling.Core.Database;
@@ -7,6 +8,9 @@ using Sterling.Core.Serialization;
 
 namespace Sterling.Core
 {
+    /// <summary>
+    ///     Provides the storage driver
+    /// </summary>
     public interface ISterlingDriver
     {
         /// <summary>
@@ -49,7 +53,7 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>
-        void SerializeIndex<TKey, TIndex>(Type type, string indexName, Dictionary<TKey, TIndex> indexMap);
+        void SerializeIndex<TKey, TIndex>(Type type, string indexName, ConcurrentDictionary<TKey, TIndex> indexMap);
 
         /// <summary>
         ///     Serialize a double index 
@@ -60,7 +64,7 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>        
-        void SerializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName, Dictionary<TKey, Tuple<TIndex1,TIndex2>> indexMap);
+        void SerializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName, ConcurrentDictionary<TKey, Tuple<TIndex1,TIndex2>> indexMap);
 
         /// <summary>
         ///     Deserialize a single index
@@ -70,7 +74,7 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>        
         /// <returns>The index map</returns>
-        Dictionary<TKey, TIndex> DeserializeIndex<TKey, TIndex>(Type type, string indexName);
+        ConcurrentDictionary<TKey, TIndex> DeserializeIndex<TKey, TIndex>(Type type, string indexName);
 
         /// <summary>
         ///     Deserialize a double index
@@ -81,13 +85,13 @@ namespace Sterling.Core
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>        
         /// <returns>The index map</returns>        
-        Dictionary<TKey, Tuple<TIndex1, TIndex2>> DeserializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName);
+        ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>> DeserializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName);
 
         /// <summary>
         ///     Publish the list of tables
         /// </summary>
         /// <param name="tables">The list of tables</param>
-        void PublishTables(Dictionary<Type,ITableDefinition> tables);
+        void PublishTables(ConcurrentDictionary<Type,ITableDefinition> tables);
 
         /// <summary>
         ///     Serialize the type master

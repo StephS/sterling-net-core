@@ -1,8 +1,9 @@
+using Sterling.Core.Serialization;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using Sterling.Core.Serialization;
 
 namespace Sterling.Core.Database
 {
@@ -15,7 +16,7 @@ namespace Sterling.Core.Database
 
         protected BaseDriver()
         {
-            TypeIndex = new List<string>();   
+            this.TypeIndex = new List<string>();
         }
 
         /// <summary>
@@ -25,10 +26,10 @@ namespace Sterling.Core.Database
         /// <param name="serializer">Serializer</param>
         /// <param name="log">Logging delegate</param>
         protected BaseDriver(string databaseName, ISterlingSerializer serializer, Action<SterlingLogLevel, string, Exception> log) : this()
-        {            
-            DatabaseName = databaseName;
-            DatabaseSerializer = serializer;
-            Log = log;
+        {
+            this.DatabaseName = databaseName;
+            this.DatabaseSerializer = serializer;
+            this.Log = log;
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace Sterling.Core.Database
         ///     Logger
         /// </summary>
         public Action<SterlingLogLevel, string, Exception> Log { get; set; }
-        
+
         /// <summary>
         ///     The registered serializer for the database
         /// </summary>
@@ -61,7 +62,7 @@ namespace Sterling.Core.Database
         /// <param name="keyType">Type of the key</param>
         /// <param name="template">The template</param>
         /// <returns>The keys without the template</returns>
-        public abstract IDictionary DeserializeKeys(Type type, Type keyType, IDictionary template);        
+        public abstract IDictionary DeserializeKeys(Type type, Type keyType, IDictionary template);
 
         /// <summary>
         ///     Serialize a single index 
@@ -71,7 +72,7 @@ namespace Sterling.Core.Database
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>
-        public abstract void SerializeIndex<TKey, TIndex>(Type type, string indexName, Dictionary<TKey, TIndex> indexMap);
+        public abstract void SerializeIndex<TKey, TIndex>(Type type, string indexName, ConcurrentDictionary<TKey, TIndex> indexMap);
 
         /// <summary>
         ///     Serialize a double index 
@@ -83,7 +84,7 @@ namespace Sterling.Core.Database
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>        
         public abstract void SerializeIndex<TKey, TIndex1, TIndex2>(Type type, string indexName,
-                                                                    Dictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap);
+                                                                    ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap);
 
         /// <summary>
         ///     Deserialize a single index
@@ -93,7 +94,7 @@ namespace Sterling.Core.Database
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>        
         /// <returns>The index map</returns>
-        public abstract Dictionary<TKey, TIndex> DeserializeIndex<TKey, TIndex>(Type type, string indexName);
+        public abstract ConcurrentDictionary<TKey, TIndex> DeserializeIndex<TKey, TIndex>(Type type, string indexName);
 
         /// <summary>
         ///     Deserialize a double index
@@ -104,7 +105,7 @@ namespace Sterling.Core.Database
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>        
         /// <returns>The index map</returns>        
-        public abstract Dictionary<TKey, Tuple<TIndex1, TIndex2>> DeserializeIndex<TKey, TIndex1, TIndex2>(Type type,
+        public abstract ConcurrentDictionary<TKey, Tuple<TIndex1, TIndex2>> DeserializeIndex<TKey, TIndex1, TIndex2>(Type type,
                                                                                                            string
                                                                                                                indexName);
 
@@ -112,7 +113,7 @@ namespace Sterling.Core.Database
         ///     Publish the list of tables
         /// </summary>
         /// <param name="tables">The list of tables</param>
-        public abstract void PublishTables(Dictionary<Type, ITableDefinition> tables);
+        public abstract void PublishTables(ConcurrentDictionary<Type, ITableDefinition> tables);
 
         /// <summary>
         ///     Serialize the type master
@@ -125,7 +126,7 @@ namespace Sterling.Core.Database
         /// <param name="types">The list of types</param>
         public void DeserializeTypes(IList<string> types)
         {
-            TypeIndex = new List<string>(types);
+            this.TypeIndex = new List<string>(types);
         }
 
         /// <summary>
@@ -134,7 +135,7 @@ namespace Sterling.Core.Database
         /// <returns></returns>
         public IList<string> GetTypes()
         {
-            return new List<string>(TypeIndex);
+            return new List<string>(this.TypeIndex);
         }
 
         /// <summary>
@@ -144,13 +145,13 @@ namespace Sterling.Core.Database
         /// <returns>The type</returns>
         public virtual int GetTypeIndex(string type)
         {
-            lock (((ICollection) TypeIndex).SyncRoot)
+            lock (((ICollection)this.TypeIndex).SyncRoot)
             {
-                if (!TypeIndex.Contains(type))
+                if (!this.TypeIndex.Contains(type))
                 {
-                    TypeIndex.Add(type);
+                    this.TypeIndex.Add(type);
                 }
-                return TypeIndex.IndexOf(type);
+                return this.TypeIndex.IndexOf(type);
             }
         }
 
@@ -161,7 +162,7 @@ namespace Sterling.Core.Database
         /// <returns>The type</returns>
         public virtual string GetTypeAtIndex(int index)
         {
-            return TypeIndex[index];
+            return this.TypeIndex[index];
         }
 
         /// <summary>

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Sterling.Core.Database;
+using Sterling.Core.Exceptions;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Sterling.Core.Database;
-using Sterling.Core.Exceptions;
-using System.Collections.Generic;
 
 namespace Sterling.Core.Serialization
 {
@@ -24,7 +24,7 @@ namespace Sterling.Core.Serialization
 
         public T UnwrapForDeserialization<T>()
         {
-            return (T)Value;
+            return (T)this.Value;
         }
     }
 
@@ -68,12 +68,12 @@ namespace Sterling.Core.Serialization
         /// <param name="type">The type to manage</param>
         private void _CacheProperties(Type type)
         {
-            lock (((ICollection)_propertyCache).SyncRoot)
+            lock (((ICollection)this._propertyCache).SyncRoot)
             {
                 // fast "out" if already exists
-                if (_propertyCache.ContainsKey(type)) return;
+                if (this._propertyCache.ContainsKey(type)) return;
 
-                _propertyCache.Add(type, new Dictionary<string, SerializationCache>());
+                this._propertyCache.Add(type, new Dictionary<string, SerializationCache>());
 
                 var isList = typeof(IList).IsAssignableFrom(type);
                 var isDictionary = typeof(IDictionary).IsAssignableFrom(type);
@@ -86,7 +86,7 @@ namespace Sterling.Core.Serialization
                              where
                              !f.IsStatic &&
                              !f.IsLiteral &&
-                             !f.IsIgnored(_database.IgnoreAttribute) && !f.FieldType.IsIgnored(_database.IgnoreAttribute)
+                             !f.IsIgnored(this._database.IgnoreAttribute) && !f.FieldType.IsIgnored(this._database.IgnoreAttribute)
                              select new PropertyOrField(f);
 
                 var properties = from p in type.GetProperties()
@@ -94,7 +94,7 @@ namespace Sterling.Core.Serialization
                                  ((noDerived && p.DeclaringType.Equals(type) || !noDerived)) &&
                                  p.CanRead && p.CanWrite &&
                                  p.GetGetMethod() != null && p.GetSetMethod() != null
-                                       && !p.IsIgnored(_database.IgnoreAttribute) && !p.PropertyType.IsIgnored(_database.IgnoreAttribute)
+                                       && !p.IsIgnored(this._database.IgnoreAttribute) && !p.PropertyType.IsIgnored(this._database.IgnoreAttribute)
                                  select new PropertyOrField(p);
 
                 foreach (var p in properties.Concat(fields))
@@ -102,11 +102,11 @@ namespace Sterling.Core.Serialization
                     var propType = p.PfType;
 
                     // eagerly add to the type master
-                    _typeResolver(propType.AssemblyQualifiedName);
+                    this._typeResolver(propType.AssemblyQualifiedName);
 
                     var p1 = p;
 
-                    _propertyCache[type].Add(p1.Name, new SerializationCache(propType, p1.Name, (parent, property) => p1.Setter(parent, property), p1.GetValue));
+                    this._propertyCache[type].Add(p1.Name, new SerializationCache(propType, p1.Name, (parent, property) => p1.Setter(parent, property), p1.GetValue));
                 }
             }
         }
@@ -122,11 +122,11 @@ namespace Sterling.Core.Serialization
         public SerializationHelper(ISterlingDatabaseInstance database, ISterlingSerializer serializer,
                                    LogManager logManager, Func<string, int> typeResolver, Func<int, string> typeIndexer)
         {
-            _database = database;
-            _serializer = serializer;
-            _logManager = logManager;
-            _typeResolver = typeResolver;
-            _typeIndexer = typeIndexer;
+            this._database = database;
+            this._serializer = serializer;
+            this._logManager = logManager;
+            this._typeResolver = typeResolver;
+            this._typeIndexer = typeIndexer;
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Sterling.Core.Serialization
         /// <param name="saveTypeExplicit">False if the calling method has already stored the object type, otherwise true</param>
         public void Save(Type type, object instance, BinaryWriter bw, CycleCache cache, bool saveTypeExplicit)
         {
-            _logManager.Log(SterlingLogLevel.Verbose, string.Format("Sterling is serializing type {0}", type.FullName),
+            this._logManager.Log(SterlingLogLevel.Verbose, string.Format("Sterling is serializing type {0}", type.FullName),
                             null);
 
             // need to indicate to the stream whether or not this is null
@@ -167,7 +167,7 @@ namespace Sterling.Core.Serialization
             if (nullFlag) return;
 
             // build the cache for reflection
-            if (!_propertyCache.ContainsKey(type))
+            if (!this._propertyCache.ContainsKey(type))
             {
                 //_CacheProperties(type);
                 _CacheProperties(type);
@@ -185,13 +185,18 @@ namespace Sterling.Core.Serialization
             {
                 _SaveDictionary(instance as IDictionary, bw, cache);
             }
+            // test collection
+            //else if (typeof(ICollection).IsAssignableFrom(type))
+            //{
+            //    _SaveCollection(instance as ICollection, bw, cache);
+            //}
             else if (saveTypeExplicit)
             {
-                bw.Write(_typeResolver(type.AssemblyQualifiedName));
+                bw.Write(this._typeResolver(type.AssemblyQualifiedName));
             }
 
             // now iterate the serializable properties - create a copy to avoid multi-threaded conflicts
-            foreach (var p in new Dictionary<string, SerializationCache>(_propertyCache[type]))
+            foreach (var p in new Dictionary<string, SerializationCache>(this._propertyCache[type]))
             {
                 var serializationCache = p.Value;
                 var value = serializationCache.GetMethod(instance);
@@ -201,7 +206,32 @@ namespace Sterling.Core.Serialization
             // indicate the end of the instance was reached.
             bw.Write(END_OF_INSTANCE);
         }
+        /*
+        private void _SaveCollection(ICollection list, BinaryWriter bw, CycleCache cache)
+        {
+            _SerializeNull(bw, list == null);
 
+            if (list == null)
+            {
+                return;
+            }
+
+            var itemsWithoutNulls = new List<object>();
+            foreach (var item in list)
+            {
+                if (item != null)
+                {
+                    itemsWithoutNulls.Add(item);
+                }
+            }
+
+            bw.Write(itemsWithoutNulls.Count);
+            foreach (var item in itemsWithoutNulls)
+            {
+                _InnerSave(item == null ? typeof(string) : item.GetType(), "CollectionItem", item, bw, cache);
+            }
+        }
+        */
         private void _SaveList(IList list, BinaryWriter bw, CycleCache cache)
         {
             _SerializeNull(bw, list == null);
@@ -271,7 +301,7 @@ namespace Sterling.Core.Serialization
 
         private void _InnerSave(Type type, string propertyName, object instance, BinaryWriter bw, CycleCache cache)
         {
-            if (_database.IsRegistered(type))
+            if (this._database.IsRegistered(type))
             {
                 // foreign table - write if it is null or not, and if not null, write the key
                 // then serialize it separately
@@ -279,7 +309,7 @@ namespace Sterling.Core.Serialization
                 return;
             }
 
-            if (_serializer.CanSerialize(type))
+            if (this._serializer.CanSerialize(type))
             {
                 _SerializeProperty(type, propertyName, instance, bw);
                 return;
@@ -288,7 +318,7 @@ namespace Sterling.Core.Serialization
             if (instance is Array)
             {
                 bw.Write(propertyName + PROPERTY_VALUE_SEPARATOR);
-                bw.Write(_typeResolver(type.AssemblyQualifiedName));
+                bw.Write(this._typeResolver(type.AssemblyQualifiedName));
                 _SaveArray(bw, cache, instance as Array);
                 return;
             }
@@ -296,7 +326,7 @@ namespace Sterling.Core.Serialization
             if (typeof(IList).IsAssignableFrom(type))
             {
                 bw.Write(propertyName + PROPERTY_VALUE_SEPARATOR);
-                bw.Write(_typeResolver(type.AssemblyQualifiedName));
+                bw.Write(this._typeResolver(type.AssemblyQualifiedName));
                 _SaveList(instance as IList, bw, cache);
                 return;
             }
@@ -304,13 +334,13 @@ namespace Sterling.Core.Serialization
             if (typeof(IDictionary).IsAssignableFrom(type))
             {
                 bw.Write(propertyName + PROPERTY_VALUE_SEPARATOR);
-                bw.Write(_typeResolver(type.AssemblyQualifiedName));
+                bw.Write(this._typeResolver(type.AssemblyQualifiedName));
                 _SaveDictionary(instance as IDictionary, bw, cache);
                 return;
             }
 
             bw.Write(propertyName + PROPERTY_VALUE_SEPARATOR);
-            bw.Write(_typeResolver(type.AssemblyQualifiedName));
+            bw.Write(this._typeResolver(type.AssemblyQualifiedName));
             Save(type, instance, bw, cache, false);
         }
 
@@ -324,7 +354,7 @@ namespace Sterling.Core.Serialization
         private void _SerializeProperty(Type type, string propertyName, object propertyValue, BinaryWriter bw)
         {
             bw.Write(propertyName + PROPERTY_VALUE_SEPARATOR);
-            bw.Write(_typeResolver(type.AssemblyQualifiedName));
+            bw.Write(this._typeResolver(type.AssemblyQualifiedName));
 
             var isNull = propertyValue == null;
             _SerializeNull(bw, isNull);
@@ -334,7 +364,7 @@ namespace Sterling.Core.Serialization
                 return;
             }
 
-            _serializer.Serialize(propertyValue, bw);
+            this._serializer.Serialize(propertyValue, bw);
         }
 
         /// <summary>
@@ -348,29 +378,29 @@ namespace Sterling.Core.Serialization
         private void _SerializeClass(Type type, string propertyName, object foreignTable, BinaryWriter bw, CycleCache cache)
         {
             bw.Write(propertyName + PROPERTY_VALUE_SEPARATOR);
-            bw.Write(_typeResolver(type.AssemblyQualifiedName));
+            bw.Write(this._typeResolver(type.AssemblyQualifiedName));
 
             // serialize to the stream if the foreign key is nulled
             _SerializeNull(bw, foreignTable == null);
 
             if (foreignTable == null) return;
 
-            var foreignKey = _database.Save(foreignTable.GetType(), foreignTable.GetType(), foreignTable, cache);
+            this._database.Save(foreignTable.GetType(), foreignTable.GetType(), foreignTable, cache, out object foreignKey);
 
             // need to be able to serialize the key 
-            if (!_serializer.CanSerialize(foreignKey.GetType()))
+            if (!this._serializer.CanSerialize(foreignKey.GetType()))
             {
-                var exception = new SterlingSerializerException(_serializer, foreignKey.GetType());
-                _logManager.Log(SterlingLogLevel.Error, exception.Message, exception);
+                var exception = new SterlingSerializerException(this._serializer, foreignKey.GetType());
+                this._logManager.Log(SterlingLogLevel.Error, exception.Message, exception);
                 throw exception;
             }
 
-            _logManager.Log(SterlingLogLevel.Verbose,
+            this._logManager.Log(SterlingLogLevel.Verbose,
                             string.Format(
                                 "Sterling is saving foreign key of type {0} with value {1} for parent {2}",
                                 foreignKey.GetType().FullName, foreignKey, type.FullName), null);
 
-            _serializer.Serialize(foreignKey, bw);
+            this._serializer.Serialize(foreignKey, bw);
         }
 
         /// <summary>
@@ -400,7 +430,7 @@ namespace Sterling.Core.Serialization
         /// <param name="cache">Cycle cache</param>
         public object Load(Type type, object key, BinaryReader br, CycleCache cache)
         {
-            _logManager.Log(SterlingLogLevel.Verbose,
+            this._logManager.Log(SterlingLogLevel.Verbose,
                             string.Format("Sterling is de-serializing type {0}", type.FullName), null);
 
             if (_DeserializeNull(br))
@@ -412,7 +442,7 @@ namespace Sterling.Core.Serialization
             var instance = Activator.CreateInstance(type);
 
             // build the reflection cache);
-            if (!_propertyCache.ContainsKey(type))
+            if (!this._propertyCache.ContainsKey(type))
             {
                 //_CacheProperties(type);
                 _CacheProperties(type);
@@ -456,7 +486,7 @@ namespace Sterling.Core.Serialization
             }
             else
             {
-                type = Type.GetType(_typeIndexer(br.ReadInt32()));
+                type = Type.GetType(this._typeIndexer(br.ReadInt32()));
                 if (instance.GetType() != type)
                 {
                     instance = Activator.CreateInstance(type);
@@ -466,7 +496,7 @@ namespace Sterling.Core.Serialization
                 cache.Add(type, instance, key);
 
                 // build the reflection cache);
-                if (!_propertyCache.ContainsKey(type))
+                if (!this._propertyCache.ContainsKey(type))
                 {
                     //_CacheProperties(type);
                     _CacheProperties(type);
@@ -492,7 +522,7 @@ namespace Sterling.Core.Serialization
                 return new KeyValuePair<string, object>(END_OF_INSTANCE, END_OF_INSTANCE);
             }
 
-            var typeName = _typeIndexer(br.ReadInt32());
+            var typeName = this._typeIndexer(br.ReadInt32());
 
             if (_DeserializeNull(br))
             {
@@ -501,23 +531,23 @@ namespace Sterling.Core.Serialization
 
             Type typeResolved = null;
 
-            if (!_typeRef.TryGetValue(typeName, out typeResolved))
+            if (!this._typeRef.TryGetValue(typeName, out typeResolved))
             {
                 typeResolved = Type.GetType(typeName);
 
-                lock (((ICollection)_typeRef).SyncRoot)
+                lock (((ICollection)this._typeRef).SyncRoot)
                 {
-                    if (!_typeRef.ContainsKey(typeName))
+                    if (!this._typeRef.ContainsKey(typeName))
                     {
-                        _typeRef.Add(typeName, typeResolved);
+                        this._typeRef.Add(typeName, typeResolved);
                     }
                 }
             }
 
-            if (_database.IsRegistered(typeResolved))
+            if (this._database.IsRegistered(typeResolved))
             {
-                var keyType = _database.GetKeyType(typeResolved);
-                var key = _serializer.Deserialize(keyType, br);
+                var keyType = this._database.GetKeyType(typeResolved);
+                var key = this._serializer.Deserialize(keyType, br);
 
                 var cached = cache.CheckKey(keyType, key);
                 if (cached != null)
@@ -525,14 +555,14 @@ namespace Sterling.Core.Serialization
                     return new KeyValuePair<string, object>(propertyName, cached);
                 }
 
-                cached = _database.Load(typeResolved, key, cache);
+                cached = this._database.Load(typeResolved, key, cache);
                 cache.Add(typeResolved, cached, key);
                 return new KeyValuePair<string, object>(propertyName, cached);
             }
 
-            if (_serializer.CanSerialize(typeResolved))
+            if (this._serializer.CanSerialize(typeResolved))
             {
-                return new KeyValuePair<string, object>(propertyName, _serializer.Deserialize(typeResolved, br));
+                return new KeyValuePair<string, object>(propertyName, this._serializer.Deserialize(typeResolved, br));
             }
 
 
@@ -574,7 +604,7 @@ namespace Sterling.Core.Serialization
             var instance = Activator.CreateInstance(typeResolved);
 
             // build the reflection cache);
-            if (!_propertyCache.ContainsKey(typeResolved))
+            if (!this._propertyCache.ContainsKey(typeResolved))
             {
                 //_CacheProperties(type);
                 _CacheProperties(typeResolved);
@@ -591,7 +621,7 @@ namespace Sterling.Core.Serialization
             while (propertyPair.Key != END_OF_INSTANCE)
             {
                 SerializationCache serializationCache;
-                if (_propertyCache[typeResolved].TryGetValue(propertyPair.Key, out serializationCache))
+                if (this._propertyCache[typeResolved].TryGetValue(propertyPair.Key, out serializationCache))
                 {
                     serializationCache.SetMethod(instance, propertyPair.Value);
                 }
@@ -599,7 +629,7 @@ namespace Sterling.Core.Serialization
                 {
                     // unknown property, see if it should be converted or ignored
                     ISterlingPropertyConverter propertyConverter;
-                    if (_database.TryGetPropertyConverter(typeResolved, out propertyConverter))
+                    if (this._database.TryGetPropertyConverter(typeResolved, out propertyConverter))
                     {
                         propertyConverter.SetValue(instance, propertyPair.Key, propertyPair.Value);
                     }
@@ -636,14 +666,14 @@ namespace Sterling.Core.Serialization
         private void _SerializeNull(BinaryWriter bw, bool isNull)
         {
             bw.Write(isNull ? NULL : NOTNULL);
-            _logManager.Log(SterlingLogLevel.Verbose, string.Format("{0}", isNull ? NULL_DISPLAY : NOTNULL_DISPLAY), null);
+            this._logManager.Log(SterlingLogLevel.Verbose, string.Format("{0}", isNull ? NULL_DISPLAY : NOTNULL_DISPLAY), null);
         }
 
         private bool _DeserializeNull(BinaryReader br)
         {
             var nullFlag = br.ReadUInt16();
             var isNull = nullFlag == NULL;
-            _logManager.Log(SterlingLogLevel.Verbose, string.Format("{0}", isNull ? NULL_DISPLAY : NOTNULL_DISPLAY), null);
+            this._logManager.Log(SterlingLogLevel.Verbose, string.Format("{0}", isNull ? NULL_DISPLAY : NOTNULL_DISPLAY), null);
             return isNull;
         }
     }
