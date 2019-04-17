@@ -30,6 +30,7 @@ namespace Sterling.CmdLine.Test
             var colorItemList = colors.Select(c => new CoolColor { Name = c }).ToList();
             Console.WriteLine("Saving colors (doesn't really take a second, but we'll wait anyway)...");
             db.SaveAsync<CoolColor>(colorItemList);
+            
             Thread.Sleep(1000); // just pause a bit because we're not monitoring the background worker
             Console.WriteLine("Creating combinations...");
             var planetId = 1;

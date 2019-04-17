@@ -1,0 +1,2577 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>sterling-core</name>
+    </assembly>
+    <members>
+        <member name="T:Sterling.Core.Database.BaseDatabaseInstance">
+            <summary>
+                Base class for a sterling database instance
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDatabaseInstance.Driver">
+            <summary>
+                Master database driver
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.BaseDatabaseInstance._locks">
+            <summary>
+                Master database locks
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.BaseDatabaseInstance._workers">
+            <summary>
+                Workers to track/flush
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.BaseDatabaseInstance._triggers">
+            <summary>
+                List of triggers
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.BaseDatabaseInstance.TableDefinitions">
+            <summary>
+                The table definitions
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDatabaseInstance.Serializer">
+            <summary>
+                Serializer
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Deactivate">
+            <summary>
+                Called when this should be deactivated
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.#ctor">
+            <summary>
+                The base database instance
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDatabaseInstance.Lock">
+            <summary>
+                Must return an object for synchronization
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterTrigger``2(Sterling.Core.Database.BaseSterlingTrigger{``0,``1})">
+            <summary>
+                Register a trigger
+            </summary>
+            <param name="trigger">The trigger</param>
+        </member>
+        <member name="F:Sterling.Core.Database.BaseDatabaseInstance._byteInterceptorList">
+            <summary>
+            The byte stream interceptor list. 
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterInterceptor``1">
+            <summary>
+            Registers the BaseSterlingByteInterceptor
+            </summary>
+            <typeparam name="T">The type of the interceptor</typeparam>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.UnRegisterInterceptors">
+            <summary>
+            Clears the _byteInterceptorList object
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.UnregisterTrigger``2(Sterling.Core.Database.BaseSterlingTrigger{``0,``1})">
+            <summary>
+                Unregister the trigger
+            </summary>
+            <param name="trigger">The trigger</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance._TriggerList(System.Type)">
+            <summary>
+                Fire the triggers for a type
+            </summary>
+            <param name="type">The target type</param>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDatabaseInstance.Name">
+            <summary>
+                The name of the database instance
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDatabaseInstance.IgnoreAttribute">
+            <summary>
+                The type dictating which objects should be ignored
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterTables">
+            <summary>
+                Method called from the constructor to register tables
+            </summary>
+            <returns>The list of tables for the database</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterTypeResolvers">
+            <summary>
+                Register any type resolvers.
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterPropertyConverters">
+            <summary>
+                Registers any property converters.
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterTypeResolver(Sterling.Core.ISterlingTypeResolver)">
+            <summary>
+            Register a class responsible for type resolution.
+            </summary>
+            <param name="typeInterceptor"></param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterPropertyConverter(Sterling.Core.ISterlingPropertyConverter)">
+            <summary>
+                Registers a property converter.
+            </summary>
+            <param name="propertyConverter">The property converter</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.TryGetPropertyConverter(System.Type,Sterling.Core.ISterlingPropertyConverter@)">
+            <summary>
+                Gets the property converter for the given type, or returns null if none is found.
+            </summary>
+            <param name="type">The type</param>
+            <param name="propertyConverter">The property converter</param>
+            <returns>True if there is a registered property converter.</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.CreateTableDefinition``2(System.Func{``0,``1})">
+            <summary>
+                Returns a table definition 
+            </summary>
+            <typeparam name="T">The type of the table</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <param name="keyFunction">The key mapping function</param>
+            <returns>The table definition</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.GetTableDefinitions">
+            <summary>
+                Get the list of table definitions
+            </summary>
+            <returns>The list of table definitions</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.GetTableDefinition(System.Object)">
+            <summary>
+                Get the list of table definitions
+            </summary>
+            <returns>The list of table definitions</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.RegisterTableDefinition(Sterling.Core.Database.ITableDefinition)">
+            <summary>
+                Register a new table definition
+            </summary>
+            <param name="tableDefinition">The new table definition</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.PublishTables(Sterling.Core.ISterlingDriver)">
+            <summary>
+                Call to publish tables 
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.IsRegistered``1(``0)">
+            <summary>
+                True if it is registered with the sterling engine
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>True if it can be persisted</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.IsRegistered(System.Type)">
+            <summary>
+                Non-generic registration check
+            </summary>
+            <param name="type">The type</param>
+            <returns>True if it is registered</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.GetKey(System.Object)">
+            <summary>
+                Get the key for an object
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.GetKeyType(System.Type)">
+            <summary>
+                Get the key for an object
+            </summary>
+            <param name="table">The instance type</param>
+            <returns>The key type</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Query``2">
+            <summary>
+                Query (keys only)
+            </summary>
+            <typeparam name="T">The type to query</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <returns>The list of keys to query</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Query``3(System.String)">
+            <summary>
+                Query an index
+            </summary>
+            <typeparam name="T">The table type</typeparam>
+            <typeparam name="TIndex">The index type</typeparam>
+            <typeparam name="TKey">The key type</typeparam>
+            <param name="indexName">The name of the index</param>
+            <returns>The indexed items</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Query``4(System.String)">
+            <summary>
+                Query an index
+            </summary>
+            <typeparam name="T">The table type</typeparam>
+            <typeparam name="TIndex1">The first index type</typeparam>
+            <typeparam name="TIndex2">The second index type</typeparam>
+            <typeparam name="TKey">The key type</typeparam>
+            <param name="indexName">The name of the index</param>
+            <returns>The indexed items</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.SaveAs``2(``0,``1@)">
+            <summary>
+                Save an instance against a base class table definition
+            </summary>
+            <typeparam name="T">The table type</typeparam>
+            <typeparam name="TKey">Save it</typeparam>
+            <param name="instance">An instance or sub-class of the table type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.SaveAs``1(``0,System.Object@)">
+            <summary>
+                Save an instance against a base class table definition
+            </summary>
+            <typeparam name="T">The table type</typeparam>
+            <param name="instance">An instance or sub-class of the table type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.SaveAs(System.Type,System.Object,System.Object@)">
+            <summary>
+                Save against a base class when key is not known
+            </summary>
+            <param name="tableType"></param>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Save``2(``0,``1@)">
+            <summary>
+                Save it
+            </summary>
+            <typeparam name="T">The instance type</typeparam>
+            <typeparam name="TKey">Save it</typeparam>
+            <param name="instance">The instance</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Save(System.Type,System.Object,System.Object@)">
+            <summary>
+                Entry point for save
+            </summary>
+            <param name="type">Type to save</param>
+            <param name="instance">Instance</param>
+            <returns>The key saved</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Save(System.Type,System.Type,System.Object,Sterling.Core.Database.CycleCache,System.Object@)">
+            <summary>
+                Save when key is not known
+            </summary>
+            <param name="actualType">The type of instance to save</param>
+            <param name="tableType">The table type to save to</param>
+            <param name="instance">The instance</param>
+            <param name="cache">Cycle cache</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Save``1(``0)">
+            <summary>
+                Save when key is not known
+            </summary>
+            <typeparam name="T">The type of the instance</typeparam>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Save``1(``0,System.Object@)">
+            <summary>
+                Save when key is not known
+            </summary>
+            <typeparam name="T">The type of the instance</typeparam>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.SaveAsync``1(System.Collections.Generic.IList{``0})">
+            <summary>
+                Save asynchronously
+            </summary>
+            <typeparam name="T">The type to save</typeparam>
+            <param name="list">A list of items to save</param>
+            <returns>A unique identifier for the batch</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.SaveAsync``1(System.Collections.Generic.IList{``0},System.Threading.CancellationTokenSource)">
+            <summary>
+                Save asynchronously
+            </summary>
+            <typeparam name="T">The type to save</typeparam>
+            <param name="list">A list of items to save</param>
+            <param name="cancellationTokenSource">CancellationTokenSource when activated cancels the save</param>
+            <returns>A unique identifier for the batch</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.SaveAsync(System.Collections.IList)">
+            <summary>
+                Non-generic asynchronous save
+            </summary>
+            <param name="list">The list of items</param>
+            <returns>A unique job identifier</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.SaveAsync(System.Collections.IList,System.Threading.CancellationTokenSource)">
+            <summary>
+                Non-generic asynchronous save
+            </summary>
+            <param name="list">The list of items</param>
+            <param name="cancellationTokenSource">CancellationTokenSource when activated cancels the save</param>
+            <returns>list containing all of the added items</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Flush">
+            <summary>
+                Flush all keys and indexes to storage
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Load``2(``1)">
+            <summary>
+                Load it 
+            </summary>
+            <typeparam name="T">The type to load</typeparam>
+            <typeparam name="TKey">The key type</typeparam>
+            <param name="key">The value of the key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Load``1(System.Object)">
+            <summary>
+                Load it (key type not typed)
+            </summary>
+            <typeparam name="T">The type to load</typeparam>
+            <param name="key">The key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Load(System.Type,System.Object)">
+            <summary>
+                Load entry point with new cycle cache
+            </summary>
+            <param name="type">The type to load</param>
+            <param name="key">The key</param>
+            <returns>The object</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Load(System.Type,System.Object,Sterling.Core.Database.CycleCache)">
+            <summary>
+                Load it without knowledge of the key type
+            </summary>
+            <param name="type">The type to load</param>
+            <param name="key">The key</param>
+            <param name="cache">Cache queue</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.GetInstance(System.Type,System.Object,System.Int32)">
+            <summary>
+                Gets an instance by key
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.GetInstance(System.Type,System.Object,System.Int32,Sterling.Core.Database.CycleCache)">
+            <summary>
+                Gets an instance by key
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Delete``1(``0)">
+            <summary>
+                Delete it 
+            </summary>
+            <typeparam name="T">The type to delete</typeparam>
+            <param name="instance">The instance</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Delete(System.Type,System.Object)">
+            <summary>
+                Delete it (non-generic)
+            </summary>
+            <param name="type">The type</param>
+            <param name="key">The key</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Truncate(System.Type)">
+            <summary>
+                Truncate all records for a type
+            </summary>
+            <param name="type">The type</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Purge">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Purge(System.Int32)">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+            <param name="millisecondsTimeout">Timeout to wait for running tasks</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Purge(System.Threading.CancellationToken)">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+            <param name="cancellationToken">Cancellation token to halt cancelling running tasks</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Purge(System.Threading.CancellationToken,System.Int32)">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+            <param name="cancellationToken">Cancellation token to halt cancelling running tasks</param>
+            <param name="millisecondsTimeout">Timeout to wait for running tasks</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance.Refresh">
+            <summary>
+                Refresh indexes and keys from disk
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance._RaiseOperation(Sterling.Core.Events.SterlingOperation,System.Type,System.Object)">
+            <summary>
+                Raise an operation
+            </summary>
+            <remarks>
+                Only send if access to the UI thread is available
+            </remarks>
+            <param name="operation">The operation</param>
+            <param name="targetType">Target type</param>
+            <param name="key">Key</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDatabaseInstance._RaiseOperation(Sterling.Core.Events.SterlingOperation,System.Type,System.Object,System.Object)">
+            <summary>
+                Raise an operation
+            </summary>
+            <remarks>
+                Only send if access to the UI thread is available
+            </remarks>
+            <param name="operation">The operation</param>
+            <param name="targetType">Target type</param>
+            <param name="instance">instance affected</param>
+            <param name="key">Key</param>
+        </member>
+        <member name="E:Sterling.Core.Database.BaseDatabaseInstance.SterlingOperationPerformed">
+            <summary>
+                Called when an operation is performed on a table
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Database.BaseDriver">
+            <summary>
+                Base driver
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.#ctor(System.String,Sterling.Core.Serialization.ISterlingSerializer,System.Action{Sterling.Core.SterlingLogLevel,System.String,System.Exception})">
+            <summary>
+                Constructor
+            </summary>
+            <param name="databaseName">Database</param>
+            <param name="serializer">Serializer</param>
+            <param name="log">Logging delegate</param>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDriver.DatabaseName">
+            <summary>
+                Name of the database the driver is registered to
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDriver.Log">
+            <summary>
+                Logger
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.BaseDriver.DatabaseSerializer">
+            <summary>
+                The registered serializer for the database
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.SerializeKeys(System.Type,System.Type,System.Collections.IDictionary)">
+            <summary>
+                Serialize the keys
+            </summary>
+            <param name="type">Type of the parent table</param>
+            <param name="keyType">Type of the key</param>
+            <param name="keyMap">Key map</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.DeserializeKeys(System.Type,System.Type,System.Collections.IDictionary)">
+            <summary>
+                Deserialize keys without generics
+            </summary>
+            <param name="type">The type</param>
+            <param name="keyType">Type of the key</param>
+            <param name="template">The template</param>
+            <returns>The keys without the template</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.SerializeIndex``2(System.Type,System.String,System.Collections.Concurrent.ConcurrentDictionary{``0,``1})">
+            <summary>
+                Serialize a single index 
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>
+            <param name="indexMap">The index map</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.SerializeIndex``3(System.Type,System.String,System.Collections.Concurrent.ConcurrentDictionary{``0,System.Tuple{``1,``2}})">
+            <summary>
+                Serialize a double index 
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex1">The type of the first index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>
+            <param name="indexMap">The index map</param>        
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.DeserializeIndex``2(System.Type,System.String)">
+            <summary>
+                Deserialize a single index
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>        
+            <returns>The index map</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.DeserializeIndex``3(System.Type,System.String)">
+            <summary>
+                Deserialize a double index
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex1">The type of the first index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>        
+            <returns>The index map</returns>        
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.PublishTables(System.Collections.Concurrent.ConcurrentDictionary{System.Type,Sterling.Core.Database.ITableDefinition})">
+            <summary>
+                Publish the list of tables
+            </summary>
+            <param name="tables">The list of tables</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.SerializeTypes">
+            <summary>
+                Serialize the type master
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.DeserializeTypes(System.Collections.Generic.IList{System.String})">
+            <summary>
+                Deserialize the type master
+            </summary>
+            <param name="types">The list of types</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.GetTypes">
+            <summary>
+                Get the type master
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.GetTypeIndex(System.String)">
+            <summary>
+                Get the index for the type
+            </summary>
+            <param name="type">The type</param>
+            <returns>The type</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.GetTypeAtIndex(System.Int32)">
+            <summary>
+                Get the type at an index
+            </summary>
+            <param name="index">The index</param>
+            <returns>The type</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.Save(System.Type,System.Int32,System.Byte[])">
+            <summary>
+                Save operation
+            </summary>
+            <param name="type">Type of the parent</param>
+            <param name="keyIndex">Index for the key</param>
+            <param name="bytes">The byte stream</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.Load(System.Type,System.Int32)">
+            <summary>
+                Load from the store
+            </summary>
+            <param name="type">The type of the parent</param>
+            <param name="keyIndex">The index of the key</param>
+            <returns>The byte stream</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.Delete(System.Type,System.Int32)">
+            <summary>
+                Delete from the store
+            </summary>
+            <param name="type">The type of the parent</param>
+            <param name="keyIndex">The index of the key</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.Truncate(System.Type)">
+            <summary>
+                Truncate a type
+            </summary>
+            <param name="type">The type to truncate</param>
+        </member>
+        <member name="M:Sterling.Core.Database.BaseDriver.Purge">
+            <summary>
+                Purge the database
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Database.BaseSterlingTrigger`2">
+            <summary>
+                Base for triggers
+            </summary>
+            <typeparam name="T">The type the trigger is for</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+        </member>
+        <member name="T:Sterling.Core.Database.CycleCache">
+            <summary>
+                Cycle cache for cycle detection
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.CycleCache.Add(System.Type,System.Object,System.Object)">
+            <summary>
+                Add an item to the cache
+            </summary>
+            <param name="type">The type</param>
+            <param name="instance">The instance</param>
+            <param name="key">The key</param>
+        </member>
+        <member name="M:Sterling.Core.Database.CycleCache.CheckKey(System.Type,System.Object)">
+            <summary>
+                Check for existance based on key and return if there
+            </summary>
+            <param name="type">The type</param>
+            <param name="key">The key</param>
+            <returns>The cached instance, if it exists</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.CycleCache.Check(System.Object)">
+            <summary>
+                Check to see if an instance already exists
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>True if it does</returns>
+        </member>
+        <member name="T:Sterling.Core.Database.CycleItem">
+            <summary>
+                Item to help prevent cycle cases
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Database.Extensions">
+            <summary>
+                Extensions for the database
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.Extensions.WithIndex``3(Sterling.Core.Database.ITableDefinition,System.String,System.Func{``0,``1})">
+            <summary>
+                Extension to register an index
+            </summary>
+            <typeparam name="T">The type of the table</typeparam>
+            <typeparam name="TIndex">The index</typeparam>
+            <typeparam name="TKey">The key</typeparam>
+            <param name="table">The table definition</param>
+            <param name="name">The name of the index</param>
+            <param name="indexer">The indexer</param>
+            <returns>The table</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.Extensions.WithIndex``4(Sterling.Core.Database.ITableDefinition,System.String,System.Func{``0,System.Tuple{``1,``2}})">
+            <summary>
+                Extension to register an index
+            </summary>
+            <typeparam name="T">The type of the table</typeparam>
+            <typeparam name="TIndex1">The index</typeparam>
+            <typeparam name="TIndex2">The second index</typeparam>        
+            <typeparam name="TKey">The key</typeparam>
+            <param name="table">The table definition</param>
+            <param name="name">The name of the index</param>
+            <param name="indexer">The indexer</param>
+            <returns>The table</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.Extensions.WithDirtyFlag``2(Sterling.Core.Database.ITableDefinition,System.Predicate{``0})">
+            <summary>
+                Extension to register the dirty flag
+            </summary>
+            <typeparam name="T">The type of the table</typeparam>
+            <typeparam name="TKey">Key type</typeparam>
+            <returns>The table</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.Extensions.IsIgnored(System.Reflection.PropertyInfo,System.Type)">
+            <summary>
+                Is a property ignored?
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.Database.Extensions.IsIgnored(System.Reflection.FieldInfo,System.Type)">
+            <summary>
+                Is a property ignored?
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.Database.Extensions.IsIgnored(System.Type,System.Type)">
+            <summary>
+                Is a property ignored?
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Sterling.Core.Database.ITableDefinition">
+            <summary>
+                Table definnition
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.ITableDefinition.Keys">
+            <summary>
+                Key list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.ITableDefinition.GetNewDictionary">
+            <summary>
+                Get a new dictionary (creates the generic)
+            </summary>
+            <returns>The new dictionary instance</returns>
+        </member>
+        <member name="P:Sterling.Core.Database.ITableDefinition.Indexes">
+            <summary>
+                Indexes
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.ITableDefinition.TableType">
+            <summary>
+                Table type
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.ITableDefinition.KeyType">
+            <summary>
+                Key type
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.ITableDefinition.Refresh">
+            <summary>
+                Refresh key list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.ITableDefinition.FetchKeyFromInstance(System.Object)">
+            <summary>
+                Fetch the key for the instance
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.ITableDefinition.IsDirty(System.Object)">
+            <summary>
+                Is the instance dirty?
+            </summary>
+            <returns>True if dirty</returns>
+        </member>
+        <member name="T:Sterling.Core.Database.LogManager">
+            <summary>
+                Manages the loggers
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.LogManager._loggers">
+            <summary>
+                The dictionary of loggers
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.LogManager.RegisterLogger(System.Action{Sterling.Core.SterlingLogLevel,System.String,System.Exception})">
+            <summary>
+                Register a logger
+            </summary>
+            <param name="logger">The logger to register</param>
+            <returns>A unique identifier</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.LogManager.UnhookLogger(System.Guid)">
+            <summary>
+                Removes a logger
+            </summary>
+            <param name="guid">The identifier for the logger</param>
+        </member>
+        <member name="M:Sterling.Core.Database.LogManager.Log(Sterling.Core.SterlingLogLevel,System.String,System.Exception)">
+            <summary>
+                Log an entry
+            </summary>
+            <param name="level">The level</param>
+            <param name="message">The message</param>
+            <param name="exception">The exception</param>
+        </member>
+        <member name="T:Sterling.Core.Database.SterlingDatabase">
+            <summary>
+                The sterling database manager
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.SterlingDatabase._databases">
+            <summary>
+                Master list of databases
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.SterlingDatabase._serializer">
+            <summary>
+                The main serializer
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Database.SterlingDatabase._logManager">
+            <summary>
+                Logger
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.RegisterLogger(System.Action{Sterling.Core.SterlingLogLevel,System.String,System.Exception})">
+            <summary>
+                Registers a logger (multiple loggers may be registered)
+            </summary>
+            <param name="log">The call for logging</param>
+            <returns>A unique identifier for the logger</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.UnhookLogger(System.Guid)">
+            <summary>
+                Unhooks a logging mechanism
+            </summary>
+            <param name="guid">The guid</param>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.Log(Sterling.Core.SterlingLogLevel,System.String,System.Exception)">
+            <summary>
+                Log a message 
+            </summary>
+            <param name="level">The level</param>
+            <param name="message">The message data</param>
+            <param name="exception">The exception</param>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.Backup``1(System.IO.BinaryWriter)">
+            <summary>
+                Back up the database
+            </summary>
+            <typeparam name="T">The database type</typeparam>
+            <param name="writer">A writer to receive the backup</param>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.Restore``1(System.IO.BinaryReader)">
+            <summary>
+                Restore the database
+            </summary>
+            <typeparam name="T">Type of the database</typeparam>
+            <param name="reader">The reader with the backup information</param>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.RegisterDatabase``2">
+            <summary>
+                Register a database type with the system
+            </summary>
+            <typeparam name="T">The type of the database to register</typeparam>
+            <typeparam name="TDriver">Register with a driver</typeparam>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.RegisterDatabase``2(``1)">
+            <summary>
+                Register a database type with the system
+            </summary>
+            <typeparam name="T">The type of the database to register</typeparam>
+            <typeparam name="TDriver">Register with a driver</typeparam>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.RegisterDatabase``1(Sterling.Core.ISterlingDriver)">
+            <summary>
+                Register a database type with the system
+            </summary>
+            <typeparam name="T">The type of the database to register</typeparam>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase._Unload">
+            <summary>
+                Unloads/flushes the database instances
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.GetDatabase(System.String)">
+            <summary>
+                Retrieve the database with the name
+            </summary>
+            <param name="databaseName">The database name</param>
+            <returns>The database instance</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.RegisterSerializer``1">
+            <summary>
+                Register a serializer with the system
+            </summary>
+            <typeparam name="T">The type of the serliaizer</typeparam>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.RegisterTypeResolver(Sterling.Core.ISterlingTypeResolver)">
+            <summary>
+            Register a class responsible for type resolution.
+            </summary>
+            <param name="typeResolver">The typeResolver</param>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.Activate">
+            <summary>
+                Must be called to activate the engine. 
+                Can only be called once.
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase.Deactivate">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.SterlingDatabase._RequiresActivation">
+            <summary>
+                Requires that sterling is activated
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Database.TableDefinition`2">
+            <summary>
+                The definition of a table
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.TableDefinition`2.#ctor(Sterling.Core.ISterlingDriver,System.Func{`1,`0},System.Func{`0,`1})">
+            <summary>
+                Construct 
+            </summary>
+            <param name="driver">Sterling driver</param>
+            <param name="resolver">The resolver for the instance</param>
+            <param name="key">The resolver for the key</param>
+        </member>
+        <member name="P:Sterling.Core.Database.TableDefinition`2.FetchKey">
+            <summary>
+                Function to fetch the key
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.TableDefinition`2.KeyList">
+            <summary>
+                The key list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.TableDefinition`2.GetNewDictionary">
+            <summary>
+                Get a new dictionary (creates the generic)
+            </summary>
+            <returns>The new dictionary instance</returns>
+        </member>
+        <member name="P:Sterling.Core.Database.TableDefinition`2.Indexes">
+            <summary>
+                The index list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.TableDefinition`2.RegisterIndex``1(System.String,System.Func{`0,``0})">
+            <summary>
+                Registers an index with the table definition
+            </summary>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <param name="name">A name for the index</param>
+            <param name="indexer">The function to retrieve the index</param>
+        </member>
+        <member name="M:Sterling.Core.Database.TableDefinition`2.RegisterIndex``2(System.String,System.Func{`0,System.Tuple{``0,``1}})">
+            <summary>
+                Registers an index with the table definition
+            </summary>
+            <typeparam name="TIndex1">The type of the first index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>        
+            <param name="name">A name for the index</param>
+            <param name="indexer">The function to retrieve the index</param>
+        </member>
+        <member name="P:Sterling.Core.Database.TableDefinition`2.Keys">
+            <summary>
+                Key list
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.TableDefinition`2.TableType">
+            <summary>
+                Table type
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Database.TableDefinition`2.KeyType">
+            <summary>
+                Key type
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.TableDefinition`2.Refresh">
+            <summary>
+                Refresh key list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Database.TableDefinition`2.FetchKeyFromInstance(System.Object)">
+            <summary>
+                Fetch the key for the instance
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.Database.TableDefinition`2.IsDirty(System.Object)">
+            <summary>
+                Is the instance dirty?
+            </summary>
+            <returns>True if dirty</returns>
+        </member>
+        <member name="T:Sterling.Core.Database.TableTypeResolver">
+            <summary>
+            Helper class to resolve the types of elements stored in database tables.
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Events.SterlingOperation">
+            <summary>
+                Operation in STerling
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Events.SterlingOperationArgs">
+            <summary>
+                Notify arguments when changes happen
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Exceptions.SterlingException">
+            <summary>
+                Base from which sterling exceptions derived
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Indexes.IIndexCollection">
+            <summary>
+                Index collection interface
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IIndexCollection.Flush">
+            <summary>
+                Serialize
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IIndexCollection.Refresh">
+            <summary>
+                Refresh the list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IIndexCollection.Truncate">
+            <summary>
+                Truncate index
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IIndexCollection.AddIndex(System.Object,System.Object)">
+            <summary>
+                Add an index to the list
+            </summary>
+            <param name="instance">The instance</param>
+            <param name="key">The related key</param>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IIndexCollection.UpdateIndex(System.Object,System.Object)">
+            <summary>
+                Update the index
+            </summary>
+            <param name="instance">The instance</param>
+            <param name="key">The key</param>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IIndexCollection.RemoveIndex(System.Object)">
+            <summary>
+                Remove an index from the list
+            </summary>
+            <param name="key">The key</param>
+        </member>
+        <member name="T:Sterling.Core.Indexes.IndexCollection`3">
+            <summary>
+                Collection of keys for a given entity
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Indexes.IndexCollection`3.IsTuple">
+            <summary>
+                True if it is a tuple
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Indexes.IndexCollection`3.IsDirty">
+            <summary>
+                Set when keys change
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.#ctor(System.String,Sterling.Core.ISterlingDriver,System.Func{`0,`1},System.Func{`2,`0})">
+            <summary>
+                Initialize the key collection
+            </summary>
+            <param name="name">name of the index</param>
+            <param name="driver">Sterling driver</param>
+            <param name="indexer">How to resolve the index</param>
+            <param name="resolver">The resolver for loading the object</param>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3._Setup(System.String,System.Func{`0,`1},System.Func{`2,`0})">
+            <summary>
+                Common constructor calls
+            </summary>
+            <param name="name"></param>
+            <param name="indexer">How to resolve the index</param>
+            <param name="resolver">The resolver for loading the object</param>
+        </member>
+        <member name="F:Sterling.Core.Indexes.IndexCollection`3.IndexList">
+            <summary>
+                The list of indexes
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Indexes.IndexCollection`3.Query">
+            <summary>
+                Query the indexes
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.DeserializeIndexes">
+            <summary>
+                Deserialize the indexes
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.SerializeIndexes">
+            <summary>
+                Serializes the key list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.Flush">
+            <summary>
+                Serialize
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.Refresh">
+            <summary>
+                Refresh the list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.Truncate">
+            <summary>
+                Truncate index
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.AddIndex(System.Object,System.Object)">
+            <summary>
+                Add an index to the list
+            </summary>
+            <param name="instance">The instance</param>
+            <param name="key">The related key</param>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.UpdateIndex(System.Object,System.Object)">
+            <summary>
+                Update the index
+            </summary>
+            <param name="instance">The instance</param>
+            <param name="key">The key</param>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`3.RemoveIndex(System.Object)">
+            <summary>
+                Remove an index from the list
+            </summary>
+            <param name="key">The key</param>
+        </member>
+        <member name="T:Sterling.Core.Indexes.IndexCollection`4">
+            <summary>
+                Collection of keys for a given entity
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`4.#ctor(System.String,Sterling.Core.ISterlingDriver,System.Func{`0,System.Tuple{`1,`2}},System.Func{`3,`0})">
+            <summary>
+                Initialize the key collection
+            </summary>
+            <param name="name">Index name</param>
+            <param name="driver">Sterling driver</param>
+            <param name="indexer">How to resolve the index</param>
+            <param name="resolver">The resolver for loading the object</param>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`4.DeserializeIndexes">
+            <summary>
+                Deserialize the indexes
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`4.SerializeIndexes">
+            <summary>
+                Serializes the key list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.IndexCollection`4.AddIndex(System.Object,System.Object,System.Object)">
+            <summary>
+                Add an index to the list
+            </summary>
+            <param name="index2">The second index</param>
+            <param name="key">The related key</param>
+            <param name="index1">The first index</param>
+        </member>
+        <member name="T:Sterling.Core.Indexes.TableIndex`3">
+            <summary>
+                An individual table key
+            </summary>
+            <typeparam name="T">The class the key maps to</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+        </member>
+        <member name="P:Sterling.Core.Indexes.TableIndex`3.Index">
+            <summary>
+                Key
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.TableIndex`3.#ctor(`1,`2,System.Func{`2,`0})">
+            <summary>
+                Construct with how to get the key
+            </summary>
+            <param name="index">The index value</param>
+            <param name="key">The associated key with the index</param>
+            <param name="getter">Getter method for loading an instance</param>
+        </member>
+        <member name="P:Sterling.Core.Indexes.TableIndex`3.LazyValue">
+            <summary>
+                Entity the key points to
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.TableIndex`3.Refresh">
+            <summary>
+                Refresh the lazy value
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.TableIndex`3.Equals(System.Object)">
+            <summary>
+                Compares for equality
+            </summary>
+            <param name="obj">The object</param>
+            <returns>True if equal</returns>
+        </member>
+        <member name="M:Sterling.Core.Indexes.TableIndex`3.GetHashCode">
+            <summary>
+                Hash code
+            </summary>
+            <returns>The has code of the key</returns>
+        </member>
+        <member name="M:Sterling.Core.Indexes.TableIndex`3.ToString">
+            <summary>
+                To string
+            </summary>
+            <returns>The key</returns>
+        </member>
+        <member name="T:Sterling.Core.Indexes.TableIndex`4">
+            <summary>
+                An individual table key
+            </summary>
+            <typeparam name="T">The class the key maps to</typeparam>
+            <typeparam name="TIndex1">The type of the index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+        </member>
+        <member name="P:Sterling.Core.Indexes.TableIndex`4.Index1">
+            <summary>
+                Index
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Indexes.TableIndex`4.Index2">
+            <summary>
+                Second index
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Indexes.TableIndex`4.#ctor(`1,`2,`3,System.Func{`3,`0})">
+            <summary>
+                Construct with how to get the key
+            </summary>
+            <param name="index2">Value of the second index</param>
+            <param name="key">The associated key with the index</param>
+            <param name="getter">Getter method for loading an instance</param>
+            <param name="index1">Value of the first index</param>
+        </member>
+        <member name="M:Sterling.Core.Indexes.TableIndex`4.ToString">
+            <summary>
+                To string
+            </summary>
+            <returns>The key</returns>
+        </member>
+        <member name="T:Sterling.Core.ISterlingByteInterceptor">
+            <summary>
+            Byte Interceptor interface
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.ISterlingDatabase">
+            <summary>
+                Sterling database interface
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.RegisterLogger(System.Action{Sterling.Core.SterlingLogLevel,System.String,System.Exception})">
+            <summary>
+                Registers a logger (multiple loggers may be registered)
+            </summary>
+            <param name="log">The call for logging</param>
+            <returns>A unique identifier for the logger</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.UnhookLogger(System.Guid)">
+            <summary>
+                Unhooks a logging mechanism
+            </summary>
+            <param name="guid">The guid</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.Log(Sterling.Core.SterlingLogLevel,System.String,System.Exception)">
+            <summary>
+                Log a message 
+            </summary>
+            <param name="level">The level</param>
+            <param name="message">The message data</param>
+            <param name="exception">The exception</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.Backup``1(System.IO.BinaryWriter)">
+            <summary>
+                Backup the database
+            </summary>
+            <typeparam name="T">The database type</typeparam>
+            <param name="writer">Writer to receive the backup</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.Restore``1(System.IO.BinaryReader)">
+            <summary>
+                Restore the database
+            </summary>
+            <typeparam name="T">The database type</typeparam>
+            <param name="reader">The stream providing the backup</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.RegisterDatabase``1">
+            <summary>
+                Register a database type with the system
+            </summary>
+            <typeparam name="T">The type of the database to register</typeparam>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.RegisterDatabase``2">
+            <summary>
+                Register a database type with the system
+            </summary>
+            <typeparam name="T">The type of the database to register</typeparam>
+            <typeparam name="TDriver">Register with a driver</typeparam>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.RegisterDatabase``1(Sterling.Core.ISterlingDriver)">
+            <summary>
+                Register a database type with the system
+            </summary>
+            <typeparam name="T">The type of the database to register</typeparam>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.GetDatabase(System.String)">
+            <summary>
+                Retrieve the database with the name
+            </summary>
+            <param name="databaseName">The database name</param>
+            <returns>The database instance</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.RegisterSerializer``1">
+            <summary>
+                Register a serializer with the system
+            </summary>
+            <typeparam name="T">The type of the serliaizer</typeparam>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabase.RegisterTypeResolver(Sterling.Core.ISterlingTypeResolver)">
+            <summary>
+            Register a class responsible for type resolution.
+            </summary>
+            <param name="typeResolver">The typeResolver</param>
+        </member>
+        <member name="T:Sterling.Core.ISterlingDatabaseInstance">
+            <summary>
+                The sterling database instance
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.ISterlingDatabaseInstance.Driver">
+            <summary>
+                The driver
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.RegisterTrigger``2(Sterling.Core.Database.BaseSterlingTrigger{``0,``1})">
+            <summary>
+                Register a trigger
+            </summary>
+            <param name="trigger">The trigger</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.RegisterInterceptor``1">
+            <summary>
+            Registers the byte stream interceptor
+            </summary>
+            <typeparam name="T">The interceptor</typeparam>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.UnRegisterInterceptor``1">
+            <summary>
+                Unregister a byte stream interceptor
+            </summary>
+            <typeparam name="T">The interceptor</typeparam>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.UnRegisterInterceptors">
+            <summary>
+            Clears the byte stream interceptor list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.UnregisterTrigger``2(Sterling.Core.Database.BaseSterlingTrigger{``0,``1})">
+            <summary>
+                Unregister the trigger
+            </summary>
+            <param name="trigger">The trigger</param>
+        </member>
+        <member name="P:Sterling.Core.ISterlingDatabaseInstance.Name">
+            <summary>
+                The name of the database instance
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.ISterlingDatabaseInstance.IgnoreAttribute">
+            <summary>
+                The type dictating which objects should be ignored
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.IsRegistered``1(``0)">
+            <summary>
+                True if it is registered with the sterling engine
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>True if it can be persisted</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.IsRegistered(System.Type)">
+            <summary>
+                Non-generic registration check
+            </summary>
+            <param name="type">The type</param>
+            <returns>True if it is registered</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.GetKey(System.Object)">
+            <summary>
+                Get the key for an object
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.GetKeyType(System.Type)">
+            <summary>
+                Get the key for an object
+            </summary>
+            <param name="table">The instance type</param>
+            <returns>The key type</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Query``2">
+            <summary>
+                Query (keys only)
+            </summary>
+            <typeparam name="T">The type to query</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <returns>The list of keys to query</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Query``3(System.String)">
+            <summary>
+                Query (index)
+            </summary>
+            <typeparam name="T">The type to query</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <param name="indexName">The name of the index</param>
+            <returns>The list of indexes to query</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Query``4(System.String)">
+            <summary>
+                Query (index)
+            </summary>
+            <typeparam name="T">The type to query</typeparam>
+            <typeparam name="TIndex1">The type of the index</typeparam>
+            <typeparam name="TIndex2">The type of the index</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <param name="indexName">The name of the index</param>
+            <returns>The list of indexes to query</returns>    
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Save``2(``0,``1@)">
+            <summary>
+                Save it
+            </summary>
+            <typeparam name="T">The instance type</typeparam>
+            <typeparam name="TKey">Save it</typeparam>
+            <param name="instance">The instance</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.SaveAs``2(``0,``1@)">
+            <summary>
+                Save a sub-class under a base class table definition
+            </summary>
+            <typeparam name="T">The table type</typeparam>
+            <typeparam name="TKey">Save it</typeparam>
+            <param name="instance">An instance or sub-class of the table type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Save``1(``0)">
+            <summary>
+                Save it (no knowledge of key)
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Save``1(``0,System.Object@)">
+            <summary>
+                Save it (no knowledge of key)
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.SaveAs``1(``0,System.Object@)">
+            <summary>
+                Save a sub-class under a base class table definition
+            </summary>
+            <typeparam name="T">The table type</typeparam>
+            <param name="instance">The instance or sub-class of the table type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Save(System.Type,System.Type,System.Object,Sterling.Core.Database.CycleCache,System.Object@)">
+            <summary>
+                Save when key is not known
+            </summary>
+            <param name="actualType">The type of instance to save</param>
+            <param name="tableType">The type used to find the table to save to</param>
+            <param name="instance">The instance</param>
+            <param name="cache">The cycle cache</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Save(System.Type,System.Object,System.Object@)">
+            <summary>
+                Save when key is not known
+            </summary>
+            <param name="type">The type to save</param>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.SaveAs(System.Type,System.Object,System.Object@)">
+            <summary>
+                Save when key is not known
+            </summary>
+            <param name="type">The table type to save against</param>
+            <param name="instance">The instance</param>
+            <returns>The key</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.SaveAsync``1(System.Collections.Generic.IList{``0})">
+            <summary>
+                Save asynchronously
+            </summary>
+            <typeparam name="T">The type to save</typeparam>
+            <param name="list">A list of items to save</param>
+            <returns>A unique identifier for the batch</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.SaveAsync``1(System.Collections.Generic.IList{``0},System.Threading.CancellationTokenSource)">
+            <summary>
+                Save asynchronously
+            </summary>
+            <typeparam name="T">The type to save</typeparam>
+            <param name="list">A list of items to save</param>
+            <param name="cancellationTokenSource">CancellationTokenSource when activated cancels the save</param>
+            <returns>A unique identifier for the batch</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.SaveAsync(System.Collections.IList)">
+            <summary>
+                Non-generic asynchronous save
+            </summary>
+            <param name="list">The list of items</param>
+            <returns>A unique job identifier</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.SaveAsync(System.Collections.IList,System.Threading.CancellationTokenSource)">
+            <summary>
+                Non-generic asynchronous save
+            </summary>
+            <param name="list">The list of items</param>
+            <param name="cancellationTokenSource">CancellationTokenSource when activated cancels the save</param>
+            <returns>A unique job identifier</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Flush">
+            <summary>
+                Flush all keys and indexes to storage
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Load``2(``1)">
+            <summary>
+                Load it 
+            </summary>
+            <typeparam name="T">The type to load</typeparam>
+            <typeparam name="TKey">The key type</typeparam>
+            <param name="key">The value of the key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Load``1(System.Object)">
+            <summary>
+                Load it (key type not typed)
+            </summary>
+            <typeparam name="T">The type to load</typeparam>
+            <param name="key">The key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Load(System.Type,System.Object,Sterling.Core.Database.CycleCache)">
+            <summary>
+                Load it without knowledge of the key type
+            </summary>
+            <param name="type">The type to load</param>
+            <param name="key">The key</param>
+            <param name="cache">The cycle cache</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Load(System.Type,System.Object)">
+            <summary>
+                Load it without knowledge of the key type
+            </summary>
+            <param name="type">The type to load</param>
+            <param name="key">The key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Delete``1(``0)">
+            <summary>
+                Delete it 
+            </summary>
+            <typeparam name="T">The type to delete</typeparam>
+            <param name="instance">The instance</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Delete(System.Type,System.Object)">
+            <summary>
+                Delete it (non-generic)
+            </summary>
+            <param name="type">The type</param>
+            <param name="key">The key</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Truncate(System.Type)">
+            <summary>
+                Truncate all records for a type
+            </summary>
+            <param name="type">The type</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Purge">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Purge(System.Int32)">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+            <param name="millisecondsTimeout">Timeout to wait for running tasks</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Purge(System.Threading.CancellationToken)">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+            <param name="cancellationToken">Cancellation token to halt cancelling running tasks</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Purge(System.Threading.CancellationToken,System.Int32)">
+            <summary>
+                Purge the entire database - wipe it clean!
+            </summary>
+            <param name="cancellationToken">Cancellation token to halt cancelling running tasks</param>
+            <param name="millisecondsTimeout">Timeout to wait for running tasks</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.Refresh">
+            <summary>
+                Refresh indexes and keys from disk
+            </summary>
+        </member>
+        <member name="E:Sterling.Core.ISterlingDatabaseInstance.SterlingOperationPerformed">
+            <summary>
+                Event for sterling changes
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.CreateTableDefinition``2(System.Func{``0,``1})">
+            <summary>
+                Create a table definition
+            </summary>
+            <typeparam name="T">The type of the table</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <param name="keyFunction">Function to return the key</param>
+            <returns>The table definition</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.GetTableDefinition(System.Object)">
+            <summary>
+                Get the table definition for instance
+            </summary>
+            <returns>The definitions, null if none found</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.GetTableDefinitions">
+            <summary>
+                Get the list of table definitions
+            </summary>
+            <returns>The list of table definitions</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.RegisterTableDefinition(Sterling.Core.Database.ITableDefinition)">
+            <summary>
+                Register a new table definition
+            </summary>
+            <param name="tableDefinition">The new table definition</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDatabaseInstance.TryGetPropertyConverter(System.Type,Sterling.Core.ISterlingPropertyConverter@)">
+            <summary>
+                Gets the property converter for the given type, or returns null if none is found.
+            </summary>
+            <param name="type">The type</param>
+            <param name="propertyConverter">The property converter</param>
+            <returns>True if there is a registered property converter.</returns>
+        </member>
+        <member name="T:Sterling.Core.ISterlingDriver">
+            <summary>
+                Provides the storage driver
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.ISterlingDriver.DatabaseName">
+            <summary>
+                Name of the database the driver is registered to
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.ISterlingDriver.Log">
+            <summary>
+                Logger
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.ISterlingDriver.DatabaseSerializer">
+            <summary>
+                The registered serializer for the database
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.SerializeKeys(System.Type,System.Type,System.Collections.IDictionary)">
+            <summary>
+                Serialize the keys
+            </summary>
+            <param name="type">Type of the parent table</param>
+            <param name="keyType">Type of the key</param>
+            <param name="keyMap">Key map</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.DeserializeKeys(System.Type,System.Type,System.Collections.IDictionary)">
+            <summary>
+                Deserialize keys without generics
+            </summary>
+            <param name="type">The type</param>
+            <param name="keyType">Type of the key</param>
+            <param name="template">The template</param>
+            <returns>The keys without the template</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.SerializeIndex``2(System.Type,System.String,System.Collections.Concurrent.ConcurrentDictionary{``0,``1})">
+            <summary>
+                Serialize a single index 
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>
+            <param name="indexMap">The index map</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.SerializeIndex``3(System.Type,System.String,System.Collections.Concurrent.ConcurrentDictionary{``0,System.Tuple{``1,``2}})">
+            <summary>
+                Serialize a double index 
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex1">The type of the first index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>
+            <param name="indexMap">The index map</param>        
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.DeserializeIndex``2(System.Type,System.String)">
+            <summary>
+                Deserialize a single index
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>        
+            <returns>The index map</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.DeserializeIndex``3(System.Type,System.String)">
+            <summary>
+                Deserialize a double index
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex1">The type of the first index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>        
+            <returns>The index map</returns>        
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.PublishTables(System.Collections.Concurrent.ConcurrentDictionary{System.Type,Sterling.Core.Database.ITableDefinition})">
+            <summary>
+                Publish the list of tables
+            </summary>
+            <param name="tables">The list of tables</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.SerializeTypes">
+            <summary>
+                Serialize the type master
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.DeserializeTypes(System.Collections.Generic.IList{System.String})">
+            <summary>
+                Deserialize the type master
+            </summary>
+            <param name="types">The list of types</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.GetTypes">
+            <summary>
+                Get the type master
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.GetTypeIndex(System.String)">
+            <summary>
+                Get the index for the type
+            </summary>
+            <param name="type">The type</param>
+            <returns>The type</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.GetTypeAtIndex(System.Int32)">
+            <summary>
+                Get the type at an index
+            </summary>
+            <param name="index">The index</param>
+            <returns>The type</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.Save(System.Type,System.Int32,System.Byte[])">
+            <summary>
+                Save operation
+            </summary>
+            <param name="type">Type of the parent</param>
+            <param name="keyIndex">Index for the key</param>
+            <param name="bytes">The byte stream</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.Load(System.Type,System.Int32)">
+            <summary>
+                Load from the store
+            </summary>
+            <param name="type">The type of the parent</param>
+            <param name="keyIndex">The index of the key</param>
+            <returns>The byte stream</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.Delete(System.Type,System.Int32)">
+            <summary>
+                Delete from the store
+            </summary>
+            <param name="type">The type of the parent</param>
+            <param name="keyIndex">The index of the key</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.Truncate(System.Type)">
+            <summary>
+                Truncate a type
+            </summary>
+            <param name="type">The type to truncate</param>
+        </member>
+        <member name="M:Sterling.Core.ISterlingDriver.Purge">
+            <summary>
+                Purge the database
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.ISterlingLock">
+            <summary>
+                Lock mechanism
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.ISterlingPropertyConverter">
+            <summary>
+            Implement this interface when you have renamed a property on one of your serialized classes. 
+            Register it by calling RegisterPropertyConverter on your database.
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.ISterlingPropertyConverter.IsConverterFor">
+            <summary>
+            Returns the type this converter can convert properties for.
+            </summary>
+            <returns>A System.Type.</returns>
+        </member>
+        <member name="M:Sterling.Core.ISterlingPropertyConverter.SetValue(System.Object,System.String,System.Object)">
+            <summary>
+            Sets the new property of the given instance to the given value.
+            </summary>
+            <param name="instance">The instance</param>
+            <param name="oldPropertyName">The old property name</param>
+            <param name="value">The value</param>
+        </member>
+        <member name="T:Sterling.Core.ISterlingTrigger">
+            <summary>
+                Interface for a sterling trigger
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.ISterlingTrigger`2">
+            <summary>
+                Trigger for sterling
+            </summary>
+            <typeparam name="T">The type it supports</typeparam>
+            <typeparam name="TKey">The key</typeparam>
+        </member>
+        <member name="T:Sterling.Core.ISterlingTypeResolver">
+            <summary>
+            Implement this interface when you're application will be updated. Typenames might have changed and with this interface, you can return the correct
+            type for a given type name. Register your resolver by calling RegisterTypeResolver on your database.
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Keys.IKeyCollection">
+            <summary>
+                Key collection interface
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.IKeyCollection.Flush">
+            <summary>
+                Serialize
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.IKeyCollection.GetIndexForKey(System.Object)">
+            <summary>
+                Get the index for a key
+            </summary>
+            <param name="key">The key</param>
+            <returns>The index</returns>
+        </member>
+        <member name="M:Sterling.Core.Keys.IKeyCollection.Refresh">
+            <summary>
+                Refresh the list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.IKeyCollection.Truncate">
+            <summary>
+                Truncate the collection
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.IKeyCollection.AddKey(System.Object)">
+            <summary>
+                Add a key to the list
+            </summary>
+            <param name="key">The key</param>
+        </member>
+        <member name="M:Sterling.Core.Keys.IKeyCollection.RemoveKey(System.Object)">
+            <summary>
+                Remove a key from the list
+            </summary>
+            <param name="key">The key</param>
+        </member>
+        <member name="T:Sterling.Core.Keys.KeyCollection`2">
+            <summary>
+                Collection of keys for a given entity
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Keys.KeyCollection`2.IsDirty">
+            <summary>
+                Set when keys change
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2.#ctor(Sterling.Core.ISterlingDriver,System.Func{`1,`0})">
+            <summary>
+                Initialize the key collection
+            </summary>
+            <param name="driver">Driver</param>
+            <param name="resolver">The resolver for loading the object</param>
+        </member>
+        <member name="F:Sterling.Core.Keys.KeyCollection`2._keyList">
+            <summary>
+                The list of keys
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Keys.KeyCollection`2._keyMap">
+            <summary>
+                Map for keys in the set
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Keys.KeyCollection`2.Query">
+            <summary>
+                Force to a new list so the internal one cannot be manipulated directly
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2._SerializeKeys">
+            <summary>
+                Serializes the key list
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Keys.KeyCollection`2.NextKey">
+            <summary>
+                The next key
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2.Flush">
+            <summary>
+                Serialize
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2.GetIndexForKey(System.Object)">
+            <summary>
+                Get the index for a key
+            </summary>
+            <param name="key">The key</param>
+            <returns>The index</returns>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2.Refresh">
+            <summary>
+                Refresh the list
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2.Truncate">
+            <summary>
+                Truncate the collection
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2.AddKey(System.Object)">
+            <summary>
+                Add a key to the list
+            </summary>
+            <param name="key">The key</param>
+        </member>
+        <member name="M:Sterling.Core.Keys.KeyCollection`2.RemoveKey(System.Object)">
+            <summary>
+                Remove a key from the list
+            </summary>
+            <param name="key">The key</param>
+        </member>
+        <member name="T:Sterling.Core.Keys.TableKey`2">
+            <summary>
+                An individual table key
+            </summary>
+            <typeparam name="T">The class the key maps to</typeparam>
+            <typeparam name="TKey">The type of the key</typeparam>
+        </member>
+        <member name="M:Sterling.Core.Keys.TableKey`2.#ctor(`1,System.Func{`1,`0})">
+            <summary>
+                Construct with how to get the key
+            </summary>
+            <param name="key">The key</param>
+            <param name="getter">The getter</param>
+        </member>
+        <member name="P:Sterling.Core.Keys.TableKey`2.Key">
+            <summary>
+                Key
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Keys.TableKey`2.LazyValue">
+            <summary>
+                Entity the key points to
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.TableKey`2.Refresh">
+            <summary>
+                Refresh the lazy value
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Keys.TableKey`2.Equals(System.Object)">
+            <summary>
+                Compares for equality
+            </summary>
+            <param name="obj">The object</param>
+            <returns>True if equal</returns>
+        </member>
+        <member name="M:Sterling.Core.Keys.TableKey`2.GetHashCode">
+            <summary>
+                Hash code
+            </summary>
+            <returns>The has code of the key</returns>
+        </member>
+        <member name="M:Sterling.Core.Keys.TableKey`2.ToString">
+            <summary>
+                To string
+            </summary>
+            <returns>The key</returns>
+        </member>
+        <member name="T:Sterling.Core.MemoryDriver">
+            <summary>
+                Default in-memory driver
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.MemoryDriver._keyCache">
+            <summary>
+                Keys
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.MemoryDriver._indexCache">
+            <summary>
+                Indexes
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.MemoryDriver._objectCache">
+            <summary>
+                Objects
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.SerializeKeys(System.Type,System.Type,System.Collections.IDictionary)">
+            <summary>
+                Serialize the keys
+            </summary>
+            <param name="type">Type of the parent table</param>
+            <param name="keyType">Type of the key</param>
+            <param name="keyMap">Key map</param>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.DeserializeKeys(System.Type,System.Type,System.Collections.IDictionary)">
+            <summary>
+                Deserialize keys without generics
+            </summary>
+            <param name="type">The type</param>
+            <param name="keyType">Type of the key</param>
+            <param name="template">The template</param>
+            <returns>The keys without the template</returns>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.SerializeIndex``2(System.Type,System.String,System.Collections.Concurrent.ConcurrentDictionary{``0,``1})">
+            <summary>
+                Serialize a single index 
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>
+            <param name="indexMap">The index map</param>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.SerializeIndex``3(System.Type,System.String,System.Collections.Concurrent.ConcurrentDictionary{``0,System.Tuple{``1,``2}})">
+            <summary>
+                Serialize a double index 
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex1">The type of the first index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>
+            <param name="indexMap">The index map</param>        
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.DeserializeIndex``2(System.Type,System.String)">
+            <summary>
+                Deserialize a single index
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex">The type of the index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>        
+            <returns>The index map</returns>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.DeserializeIndex``3(System.Type,System.String)">
+            <summary>
+                Deserialize a double index
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TIndex1">The type of the first index</typeparam>
+            <typeparam name="TIndex2">The type of the second index</typeparam>
+            <param name="type">The type of the parent table</param>
+            <param name="indexName">The name of the index</param>        
+            <returns>The index map</returns>        
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.PublishTables(System.Collections.Concurrent.ConcurrentDictionary{System.Type,Sterling.Core.Database.ITableDefinition})">
+            <summary>
+                Publish the list of tables
+            </summary>
+            <param name="tables">The list of tables</param>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.SerializeTypes">
+            <summary>
+                Serialize the type master
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.Save(System.Type,System.Int32,System.Byte[])">
+            <summary>
+                Save operation
+            </summary>
+            <param name="type">Type of the parent</param>
+            <param name="keyIndex">Index for the key</param>
+            <param name="bytes">The byte stream</param>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.Load(System.Type,System.Int32)">
+            <summary>
+                Load from the store
+            </summary>
+            <param name="type">The type of the parent</param>
+            <param name="keyIndex">The index of the key</param>
+            <returns>The byte stream</returns>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.Delete(System.Type,System.Int32)">
+            <summary>
+                Delete from the store
+            </summary>
+            <param name="type">The type of the parent</param>
+            <param name="keyIndex">The index of the key</param>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.Truncate(System.Type)">
+            <summary>
+                Truncate a type
+            </summary>
+            <param name="type">The type to truncate</param>
+        </member>
+        <member name="M:Sterling.Core.MemoryDriver.Purge">
+            <summary>
+                Purge the database
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Serialization.AggregateSerializer">
+            <summary>
+                The aggregate serializer
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Serialization.AggregateSerializer._serializers">
+            <summary>
+                List of serializers to aggregate
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Serialization.AggregateSerializer._serializerCache">
+            <summary>
+                The cache of actions mapped by type
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Serialization.AggregateSerializer._noSerializer">
+            <summary>
+                Quick lookup for non-serialization
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Serialization.AggregateSerializer.CloneFor(Sterling.Core.Serialization.ISterlingSerializer)">
+            <summary>
+                Clone the aggregate serializer and leave out the requesting (to avoid infinite loops)
+            </summary>
+            <param name="serializer">The serializer requesting the aggregate clone</param>
+            <returns>An aggregate serializer that omits the requesting serializer</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.AggregateSerializer.CanSerialize(System.Type)">
+            <summary>
+                Return true if this serializer can handle the object
+            </summary>
+            <param name="targetType">The target</param>
+            <returns>True if it can be serialized</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.AggregateSerializer.AddSerializer(Sterling.Core.Serialization.ISterlingSerializer)">
+            <summary>
+                Add a new serializer
+            </summary>
+            <param name="serializer">The serializer</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.AggregateSerializer.Serialize(System.Object,System.IO.BinaryWriter)">
+            <summary>
+                Serialize the object
+            </summary>
+            <param name="target">The target</param>
+            <param name="writer">The writer</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.AggregateSerializer.Deserialize(System.Type,System.IO.BinaryReader)">
+            <summary>
+                Deserialize the object
+            </summary>
+            <param name="type">The type of the object</param>
+            <param name="reader">A reader to deserialize from</param>
+            <returns>The deserialized object</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.BaseSerializer.CanSerialize(System.Type)">
+            <summary>
+                Return true if this serializer can handle the object
+            </summary>
+            <param name="targetType">The target</param>
+            <returns>True if it can be serialized</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.BaseSerializer.Serialize(System.Object,System.IO.BinaryWriter)">
+            <summary>
+                Serialize the object
+            </summary>
+            <param name="target">The target</param>
+            <param name="writer">The writer</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.BaseSerializer.Deserialize(System.Type,System.IO.BinaryReader)">
+            <summary>
+                Deserialize the object
+            </summary>
+            <param name="type">The type of the object</param>
+            <param name="reader">A reader to deserialize from</param>
+            <returns>The deserialized object</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.BaseSerializer.CanSerialize``1">
+            <summary>
+                Return true
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <returns>True if it can handle it</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.BaseSerializer.Deserialize``1(System.IO.BinaryReader)">
+            <summary>
+                Typed deserialization
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="reader">The reader</param>
+            <returns>The type</returns>
+        </member>
+        <member name="T:Sterling.Core.Serialization.DefaultSerializer">
+            <summary>
+                Default serializer handles the instances the writer is overloaded for by default
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Serialization.DefaultSerializer._serializers">
+            <summary>
+                Dictionary of serializers
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Serialization.DefaultSerializer.#ctor">
+            <summary>
+                Default constructor
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Serialization.DefaultSerializer.CanSerialize(System.Type)">
+            <summary>
+                Return true if this serializer can handle the object
+            </summary>
+            <param name="type">The target type</param>
+            <returns>True if it can be serialized</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.DefaultSerializer.Serialize(System.Object,System.IO.BinaryWriter)">
+            <summary>
+                Serialize the object
+            </summary>
+            <param name="target">The target</param>
+            <param name="writer">The writer</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.DefaultSerializer.Deserialize(System.Type,System.IO.BinaryReader)">
+            <summary>
+                Deserialize the object
+            </summary>
+            <param name="type">The type of the object</param>
+            <param name="reader">A reader to deserialize from</param>
+            <returns>The deserialized object</returns>
+        </member>
+        <member name="T:Sterling.Core.Serialization.ExtendedSerializer">
+            <summary>
+                Serializes some extended objects
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.Serialization.ExtendedSerializer._serializers">
+            <summary>
+                Dictionary of serializers
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ExtendedSerializer.#ctor">
+            <summary>
+                Default constructor
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ExtendedSerializer.CanSerialize(System.Type)">
+            <summary>
+                Return true if this serializer can handle the object
+            </summary>
+            <param name="type">The target type</param>
+            <returns>True if it can be serialized</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ExtendedSerializer.Serialize(System.Object,System.IO.BinaryWriter)">
+            <summary>
+                Serialize the object
+            </summary>
+            <param name="target">The target</param>
+            <param name="writer">The writer</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ExtendedSerializer.Deserialize(System.Type,System.IO.BinaryReader)">
+            <summary>
+                Deserialize the object
+            </summary>
+            <param name="type">The type of the object</param>
+            <param name="reader">A reader to deserialize from</param>
+            <returns>The deserialized object</returns>
+        </member>
+        <member name="T:Sterling.Core.Serialization.ISterlingSerializer">
+            <summary>
+                Serializer for sterling
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ISterlingSerializer.CanSerialize(System.Type)">
+            <summary>
+                Return true if this serializer can handle the object
+            </summary>
+            <param name="targetType">The target</param>
+            <returns>True if it can be serialized</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ISterlingSerializer.Serialize(System.Object,System.IO.BinaryWriter)">
+            <summary>
+                Serialize the object
+            </summary>
+            <param name="target">The target</param>
+            <param name="writer">The writer</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ISterlingSerializer.Deserialize(System.Type,System.IO.BinaryReader)">
+            <summary>
+                Deserialize the object
+            </summary>
+            <param name="type">The type of the object</param>
+            <param name="reader">A reader to deserialize from</param>
+            <returns>The deserialized object</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ISterlingSerializer.CanSerialize``1">
+            <summary>
+                Return true
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <returns>True if it can handle it</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.ISterlingSerializer.Deserialize``1(System.IO.BinaryReader)">
+            <summary>
+                Typed deserialization
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="reader">The reader</param>
+            <returns>The type</returns>
+        </member>
+        <member name="T:Sterling.Core.Serialization.PropertyOrField">
+            <summary>
+                Abstraction of property or field
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Serialization.SerializationCache">
+            <summary>
+                Cache for serialization of properties
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Serialization.SerializationCache.PropType">
+            <summary>
+                Property type
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Serialization.SerializationCache.SetMethod">
+            <summary>
+                The setter for the type
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Serialization.SerializationCache.GetMethod">
+            <summary>
+                The getter for the type
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.Serialization.SerializationCache.PropertyName">
+            <summary>
+                The name of the property.
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Serialization.SerializationNode">
+            <summary>
+                Wraps nodes for passing directly into the Save pass of the Serialization Helper
+                Basically just hosts another object so that the helper can recursively navigate properties
+                Useful in external serializers that want to re-enter the stream using the helper methods
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.Serialization.SerializationHelper">
+            <summary>
+                This class assists with the serialization and de-serialization of objects
+            </summary>
+            <remarks>
+                This is where the heavy lifting is done, and likely where most of the tweaks make sense
+            </remarks>
+        </member>
+        <member name="F:Sterling.Core.Serialization.SerializationHelper._propertyCache">
+            <summary>
+                The import cache, stores what properties are available and how to access them. Each type has a matching dictionary with the property names as keys
+                and the SerializationCache objects as values (provides access to the properties).
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper._CacheProperties(System.Type)">
+            <summary>
+                Cache the properties for a type so we don't reflect every time
+            </summary>
+            <param name="type">The type to manage</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper.#ctor(Sterling.Core.ISterlingDatabaseInstance,Sterling.Core.Serialization.ISterlingSerializer,Sterling.Core.Database.LogManager,System.Func{System.String,System.Int32},System.Func{System.Int32,System.String})">
+            <summary>
+                Constructor
+            </summary>
+            <param name="database">Database this is a helper for</param>
+            <param name="serializer">The serializer</param>
+            <param name="logManager">The logger</param>
+            <param name="typeResolver"></param>
+            <param name="typeIndexer"></param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper.Save(System.Object,System.IO.BinaryWriter)">
+            <summary>
+                External entry point for save, used by serializers
+                or other methods that simply want to intercept the
+                serialization stream. Wraps the object in a node and
+                then parses recursively
+            </summary>
+            <remarks>
+                See the custom serializer test for an example
+            </remarks>
+            <param name="obj">The instance to save</param>
+            <param name="bw">The writer to inject to</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper.Save(System.Type,System.Object,System.IO.BinaryWriter,Sterling.Core.Database.CycleCache,System.Boolean)">
+            <summary>
+                Recursive save operation
+            </summary>
+            <param name="type">The type to save (passed to support NULL)</param>
+            <param name="instance">The instance to type</param>
+            <param name="bw">The writer to save it to</param>
+            <param name="cache">Cycle cache</param>
+            <param name="saveTypeExplicit">False if the calling method has already stored the object type, otherwise true</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper._SerializeProperty(System.Type,System.String,System.Object,System.IO.BinaryWriter)">
+            <summary>
+                Serializes a property
+            </summary>
+            <param name="type">The parent type</param>
+            <param name="propertyName">The property name</param>
+            <param name="propertyValue">The property value</param>
+            <param name="bw">The writer</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper._SerializeClass(System.Type,System.String,System.Object,System.IO.BinaryWriter,Sterling.Core.Database.CycleCache)">
+            <summary>
+                Serialize a class
+            </summary>
+            <param name="type">The type</param>
+            <param name="propertyName">The name of the property.</param>
+            <param name="foreignTable">The referenced type</param>
+            <param name="bw">The writer</param>
+            <param name="cache">Cycle cache</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper.Load``1(System.IO.BinaryReader)">
+            <summary>
+                Helper load for serializers - this is not part of the internal recursion
+                Basically allows a node to be saved in a wrapper, and this is the entry
+                to unwrap it
+            </summary>
+            <typeparam name="T">Type of the object to laod</typeparam>
+            <param name="br">The reader stream being accessed</param>
+            <returns>The unwrapped object instance</returns>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper.Load(System.Type,System.Object,System.IO.BinaryReader,Sterling.Core.Database.CycleCache)">
+            <summary>
+                Recursive load operation
+            </summary>
+            <param name="type">The type to save (passed to support NULL)</param>
+            <param name="key">The associated key (for cycle detection)</param>
+            <param name="br">The reader</param>
+            <param name="cache">Cycle cache</param>
+        </member>
+        <member name="M:Sterling.Core.Serialization.SerializationHelper._Deserialize(System.IO.BinaryReader,Sterling.Core.Database.CycleCache)">
+            <summary>
+            Deserializes the next part in the BinaryReader and returns a KeyValuePair containing the property name as key van the deserialized object as value.
+            </summary>
+            <param name="br">The binary reader</param>
+            <param name="cache">The cycle cache</param>
+            <returns>A KeyValuePair containing the property name and the property value.</returns>
+        </member>
+        <member name="T:Sterling.Core.Serialization.SterlingIgnoreAttribute">
+            <summary>
+                Attribute to tag a property, class, etc. that should not be serialized
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.SterlingDefaultLogger">
+            <summary>
+                Default logger (debug) for Sterling
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.SterlingDefaultLogger.#ctor(Sterling.Core.SterlingLogLevel)">
+            <summary>
+                Create 
+            </summary>
+            <param name="minimumLevel">Minimum level to debug</param>
+        </member>
+        <member name="M:Sterling.Core.SterlingDefaultLogger.Detach">
+            <summary>
+                Detach the logger
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.SterlingDefaultLogger._Log(Sterling.Core.SterlingLogLevel,System.String,System.Exception)">
+            <summary>
+                
+            </summary>
+            <param name="logLevel"></param>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="T:Sterling.Core.SterlingEngine">
+            <summary>
+                Wrapper for the sterling database engine
+            </summary>
+        </member>
+        <member name="P:Sterling.Core.SterlingEngine.SterlingDatabase">
+            <summary>
+                The database engine
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.SterlingEngine._activated">
+            <summary>
+                True if it's been activated
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.SterlingEngine.#ctor">
+            <summary>
+                Constructor takes in the database 
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.SterlingEngine.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Sterling.Core.SterlingFactory">
+            <summary>
+                Factory to retrieve the sterling manager
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.SterlingFactory._database">
+            <summary>
+                Instance of the database
+            </summary>
+        </member>
+        <member name="F:Sterling.Core.SterlingFactory._logManager">
+            <summary>
+                The log manager
+            </summary>
+        </member>
+        <member name="M:Sterling.Core.SterlingFactory.GetDatabaseEngine">
+            <summary>
+                Gets the database engine
+            </summary>
+            <returns>The instance of the database engine</returns>
+        </member>
+        <member name="M:Sterling.Core.SterlingFactory.GetLogger">
+            <summary>
+                Logger
+            </summary>
+            <returns>The logger</returns>
+        </member>
+        <member name="T:Sterling.Core.SterlingLogLevel">
+            <summary>
+                Log levels for sterling
+            </summary>
+        </member>
+    </members>
+</doc>
