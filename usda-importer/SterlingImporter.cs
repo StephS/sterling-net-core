@@ -35,6 +35,7 @@ namespace UsdaSterling
                 Console.Write(".");
             }
 
+#if DEBUG
             Console.WriteLine(" Faulted!: " + bg.IsFaulted);
             if (bg.Exception != null)
             {
@@ -60,6 +61,7 @@ namespace UsdaSterling
                 Console.WriteLine(line);
                 Console.WriteLine(col);
             }
+#endif
 
             bg.Dispose();
             Console.WriteLine();
