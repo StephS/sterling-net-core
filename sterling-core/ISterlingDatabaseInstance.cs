@@ -22,30 +22,11 @@ namespace Sterling.Core
         /// </summary>
         ISterlingDriver Driver { get; }
 
-        SerializationHelper Helper { get; }
-
         /// <summary>
         ///     Register a trigger
         /// </summary>
         /// <param name="trigger">The trigger</param>
         void RegisterTrigger<T, TKey>(BaseSterlingTrigger<T, TKey> trigger) where T : class, new();
-
-        /// <summary>
-        /// Registers the byte stream interceptor
-        /// </summary>
-        /// <typeparam name="T">The interceptor</typeparam>
-        void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
-
-        /// <summary>
-        ///     Unregister a byte stream interceptor
-        /// </summary>
-        /// <typeparam name="T">The interceptor</typeparam>
-        void UnRegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
-
-        /// <summary>
-        /// Clears the byte stream interceptor list
-        /// </summary>
-        void UnRegisterInterceptors();
 
         /// <summary>
         ///     Unregister the trigger

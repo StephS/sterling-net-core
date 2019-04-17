@@ -22,12 +22,12 @@ namespace Sterling.Core.Database
         /// <summary>
         ///     Constructor
         /// </summary>
-        /// <param name="databaseName">Database</param>
+        /// <param name="database">Database</param>
         /// <param name="serializer">Serializer</param>
         /// <param name="log">Logging delegate</param>
-        protected BaseDriver(string databaseName, ISterlingSerializer serializer, Action<SterlingLogLevel, string, Exception> log) : this()
+        protected BaseDriver(ISterlingDatabaseInstance database, ISterlingSerializer serializer, Action<SterlingLogLevel, string, Exception> log) : this()
         {
-            this.DatabaseName = databaseName;
+            this.Database = database;
             this.DatabaseSerializer = serializer;
             this.Log = log;
         }
@@ -35,7 +35,7 @@ namespace Sterling.Core.Database
         /// <summary>
         ///     Name of the database the driver is registered to
         /// </summary>
-        public string DatabaseName { get; set; }
+        public ISterlingDatabaseInstance Database { get; set; }
 
         /// <summary>
         ///     Logger
@@ -46,6 +46,8 @@ namespace Sterling.Core.Database
         ///     The registered serializer for the database
         /// </summary>
         public ISterlingSerializer DatabaseSerializer { get; set; }
+
+        public SerializationHelper Helper { get; set; }
 
         /// <summary>
         ///     Serialize the keys
@@ -168,18 +170,18 @@ namespace Sterling.Core.Database
         /// <summary>
         ///     Save operation
         /// </summary>
-        /// <param name="type">Type of the parent</param>
+        /// <param name="tableType">Type of the parent</param>
         /// <param name="keyIndex">Index for the key</param>
         /// <param name="bytes">The byte stream</param>
-        public abstract void Save(Type type, int keyIndex, byte[] bytes);
+        public abstract void Save(Type tableType, int keyIndex, byte[] bytes);
 
         /// <summary>
         ///     Load from the store
         /// </summary>
-        /// <param name="type">The type of the parent</param>
+        /// <param name="tableType">The type of the parent</param>
         /// <param name="keyIndex">The index of the key</param>
         /// <returns>The byte stream</returns>
-        public abstract BinaryReader Load(Type type, int keyIndex);
+        public abstract BinaryReader Load(Type tableType, int keyIndex);
 
         /// <summary>
         ///     Delete from the store
@@ -198,5 +200,11 @@ namespace Sterling.Core.Database
         ///     Purge the database
         /// </summary>
         public abstract void Purge();
+
+        public abstract void Save(Type actualType, Type tableType, object instance, int keyIndex, CycleCache cache);
+        public abstract void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
+        public abstract void UnRegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
+        public abstract void UnRegisterInterceptors();
+        public abstract object Load(Type type, object key, int keyIndex, CycleCache cache);
     }
 }

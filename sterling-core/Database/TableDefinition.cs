@@ -73,7 +73,7 @@ namespace Sterling.Core.Database
             //if (Indexes.ContainsKey(name))
             if (!this.Indexes.TryAdd(name, new IndexCollection<T, TIndex, TKey>(name, this._driver, indexer, this._resolver)))
             {
-                throw new SterlingDuplicateIndexException(name, typeof(T), this._driver.DatabaseName);
+                throw new SterlingDuplicateIndexException(name, typeof(T), this._driver.Database.Name);
             }
 
             //var indexCollection = 
@@ -94,7 +94,7 @@ namespace Sterling.Core.Database
             //if (Indexes.ContainsKey(name))
             if (!this.Indexes.TryAdd(name, new IndexCollection<T, TIndex1, TIndex2, TKey>(name, this._driver, indexer, this._resolver)))
             {
-                throw new SterlingDuplicateIndexException(name, typeof(T), this._driver.DatabaseName);
+                throw new SterlingDuplicateIndexException(name, typeof(T), this._driver.Database.Name);
             }
 
             //var indexCollection = new IndexCollection<T, TIndex1, TIndex2, TKey>(name, _driver, indexer, _resolver);

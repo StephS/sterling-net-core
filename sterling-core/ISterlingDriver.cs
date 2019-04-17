@@ -13,10 +13,12 @@ namespace Sterling.Core
     /// </summary>
     public interface ISterlingDriver
     {
+        SerializationHelper Helper { get; }
+
         /// <summary>
         ///     Name of the database the driver is registered to
         /// </summary>
-        string DatabaseName { get; set; }
+        ISterlingDatabaseInstance Database { get; set; }
 
         /// <summary>
         ///     Logger
@@ -125,20 +127,57 @@ namespace Sterling.Core
         string GetTypeAtIndex(int index);
 
         /// <summary>
+        /// Registers the byte stream interceptor
+        /// </summary>
+        /// <typeparam name="T">The interceptor</typeparam>
+        void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
+
+        /// <summary>
+        ///     Unregister a byte stream interceptor
+        /// </summary>
+        /// <typeparam name="T">The interceptor</typeparam>
+        void UnRegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
+
+        /// <summary>
+        /// Clears the byte stream interceptor list
+        /// </summary>
+        void UnRegisterInterceptors();
+
+        /// <summary>
         ///     Save operation
         /// </summary>
-        /// <param name="type">Type of the parent</param>
+        /// <param name="tableType">Type of the parent</param>
         /// <param name="keyIndex">Index for the key</param>
         /// <param name="bytes">The byte stream</param>
-        void Save(Type type, int keyIndex, byte[] bytes);
+        void Save(Type tableType, int keyIndex, byte[] bytes);
+
+        /// <summary>
+        ///     Save operation
+        /// </summary>
+        /// <param name="actualType">The actual Type of the parent</param>
+        /// <param name="tableType">Type of the parent table</param>
+        /// <param name="instance">The object instance</param>
+        /// <param name="keyIndex">Index for the key</param>
+        /// <param name="cache">The cache</param>
+        void Save(Type actualType, Type tableType, object instance, int keyIndex, CycleCache cache);
 
         /// <summary>
         ///     Load from the store
         /// </summary>
-        /// <param name="type">The type of the parent</param>
+        /// <param name="tableType">The type of the parent</param>
         /// <param name="keyIndex">The index of the key</param>
         /// <returns>The byte stream</returns>
-        BinaryReader Load(Type type, int keyIndex);
+        BinaryReader Load(Type tableType, int keyIndex);
+
+        /// <summary>
+        ///     Load from the store
+        /// </summary>
+        /// <param name="tableType">The type of the parent</param>
+        /// <param name="key">the key to the instance</param>
+        /// <param name="keyIndex">The index of the key</param>
+        /// <param name="cache">The cycle cache</param>
+        /// <returns>The byte stream</returns>
+        object Load(Type tableType, object key, int keyIndex, CycleCache cache);
 
         /// <summary>
         ///     Delete from the store
@@ -156,6 +195,7 @@ namespace Sterling.Core
         /// <summary>
         ///     Purge the database
         /// </summary>
-        void Purge();        
+        void Purge();
+        
     }
 }

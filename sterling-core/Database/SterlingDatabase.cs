@@ -263,11 +263,11 @@ namespace Sterling.Core.Database
 
             if (driver == null)
             {
-                driver = new MemoryDriver(database.Name, _serializer, _logManager.Log);
+                driver = new MemoryDriver(database, _serializer, _logManager.Log);
             }
             else
             {
-                driver.DatabaseName = database.Name;
+                driver.Database = database;
                 driver.DatabaseSerializer = _serializer;
                 driver.Log = _logManager.Log;
             }

@@ -34,7 +34,7 @@ namespace UsdaSterling
                 }
                 Console.Write(".");
             }
-
+            Console.WriteLine();
 #if DEBUG
             Console.WriteLine(" Faulted!: " + bg.IsFaulted);
             if (bg.Exception != null)
@@ -64,7 +64,6 @@ namespace UsdaSterling
 #endif
 
             bg.Dispose();
-            Console.WriteLine();
             Console.WriteLine($"Successfully imported {Count<T>()} documents. Your collection is ready!");
         }
 

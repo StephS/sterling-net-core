@@ -37,18 +37,7 @@ namespace Sterling.Core.Database
         //private readonly List<Task> _workers = new List<Task>();
         private readonly ConcurrentDictionary<Task, CancellationTokenSource> _workers = new ConcurrentDictionary<Task, CancellationTokenSource>();
 
-        private SerializationHelper _serializationHelper;
 
-        public SerializationHelper Helper
-        {
-            get
-            {
-                return this._serializationHelper ?? (this._serializationHelper = new SerializationHelper(this, this.Serializer, SterlingFactory.GetLogger(),
-                                                                    s => this.Driver.GetTypeIndex(s),
-                                                                    i => this.Driver.GetTypeAtIndex(i)));
-            }
-
-        }
 
         /// <summary>
         ///     List of triggers
@@ -112,46 +101,6 @@ namespace Sterling.Core.Database
                 triggerList.Add(trigger);
             }
         }
-
-        /// <summary>
-        /// The byte stream interceptor list. 
-        /// </summary>
-        private readonly List<BaseSterlingByteInterceptor> _byteInterceptorList =
-            new List<BaseSterlingByteInterceptor>();
-
-        /// <summary>
-        /// Registers the BaseSterlingByteInterceptor
-        /// </summary>
-        /// <typeparam name="T">The type of the interceptor</typeparam>
-        public void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new()
-        {
-            this._byteInterceptorList.Add((T)Activator.CreateInstance(typeof(T)));
-        }
-
-        public void UnRegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new()
-        {
-            var interceptor = (from i
-                                   in this._byteInterceptorList
-                               where i.GetType().Equals(typeof(T))
-                               select i).FirstOrDefault();
-
-            if (interceptor != null)
-            {
-                this._byteInterceptorList.Remove(interceptor);
-            }
-        }
-
-        /// <summary>
-        /// Clears the _byteInterceptorList object
-        /// </summary>
-        public void UnRegisterInterceptors()
-        {
-            if (this._byteInterceptorList != null)
-            {
-                this._byteInterceptorList.Clear();
-            }
-        }
-
 
         /// <summary>
         ///     Unregister the trigger
@@ -579,40 +528,10 @@ namespace Sterling.Core.Database
                 }
 
                 cache.Add(tableType, instance, key);
-
                 keyIndex = tableDefinition.Keys.AddKey(key);
             }
 
-            var memStream = new MemoryStream();
-
-            try
-            {
-                using (var bw = new BinaryWriter(memStream))
-                {
-                    this.Helper.Save(actualType, instance, bw, cache, true);
-
-                    bw.Flush();
-
-                    if (this._byteInterceptorList.Count > 0)
-                    {
-                        var bytes = memStream.GetBuffer();
-
-                        bytes = this._byteInterceptorList.Aggregate(bytes,
-                                                               (current, byteInterceptor) =>
-                                                               byteInterceptor.Save(current));
-
-                        memStream = new MemoryStream(bytes);
-                    }
-
-                    memStream.Seek(0, SeekOrigin.Begin);
-                    this.Driver.Save(tableType, keyIndex, memStream.ToArray());
-                }
-            }
-            finally
-            {
-                memStream.Flush();
-                memStream.Close();
-            }
+            this.Driver.Save(actualType, tableType, instance, keyIndex, cache);
 
             // update the indexes
             foreach (var index in tableDefinition.Indexes.Values)
@@ -886,44 +805,8 @@ namespace Sterling.Core.Database
                 return null;
             }
 
-            BinaryReader br = null;
-            MemoryStream memStream = null;
+            obj = this.Driver.Load(type, key, keyIndex, cache);
 
-            try
-            {
-                br = this.Driver.Load(type, keyIndex);
-
-                var serializationHelper = new SerializationHelper(this, this.Serializer, SterlingFactory.GetLogger(),
-                                                                  s => this.Driver.GetTypeIndex(s),
-                                                                  i => this.Driver.GetTypeAtIndex(i));
-                if (this._byteInterceptorList.Count > 0)
-                {
-                    var bytes = br.ReadBytes((int)br.BaseStream.Length);
-
-                    bytes = this._byteInterceptorList.ToArray().Reverse().Aggregate(bytes,
-                                                                               (current, byteInterceptor) =>
-                                                                               byteInterceptor.Load(current));
-
-                    memStream = new MemoryStream(bytes);
-
-                    br.Close();
-                    br = new BinaryReader(memStream);
-                }
-                obj = serializationHelper.Load(type, key, br, cache);
-            }
-            finally
-            {
-                if (br != null)
-                {
-                    br.Close();
-                }
-
-                if (memStream != null)
-                {
-                    memStream.Flush();
-                    memStream.Close();
-                }
-            }
             return obj;
         }
 
