@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>.\sterling-core\sterling-core.xml</DocumentationFile>
+    <DocumentationFile>.\sterling-core\bin\Debug\sterling-core.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <DocumentationFile>.\sterling-core\sterling-core.xml</DocumentationFile>
+    <DocumentationFile>.\sterling-core\bin\Release\sterling-core.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>
