@@ -337,6 +337,24 @@ namespace Sterling.Core.Database
         }
 
         /// <summary>
+        ///     Query (keys only)
+        /// </summary>
+        /// <typeparam name="T">The type to query</typeparam>
+        /// <typeparam name="TKey">The type of the key</typeparam>
+        /// <returns>The list of keys to query</returns>
+        public IEnumerable<TableKey<T, TKey>> EnumerableQuery<T, TKey>() where T : class, new()
+        {
+            //if (!IsRegistered(typeof(T)))
+            if (!this.TableDefinitions.TryGetValue(typeof(T), out ITableDefinition tableDefinition))
+            {
+                throw new SterlingTableNotFoundException(typeof(T), this.Name);
+            }
+
+            return ((TableDefinition<T, TKey>)tableDefinition).KeyList.EnumerableQuery;
+        }
+
+        
+        /// <summary>
         ///     Query an index
         /// </summary>
         /// <typeparam name="T">The table type</typeparam>

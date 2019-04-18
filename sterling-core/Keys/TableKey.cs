@@ -36,6 +36,14 @@ namespace Sterling.Core.Keys
         public Lazy<T> LazyValue { get; private set; }
 
         /// <summary>
+        ///     Entity the key points to
+        /// </summary>
+        public T Value {
+            get { return LazyValue.Value; }
+            //private set { }
+        }
+
+        /// <summary>
         ///     Refresh the lazy value
         /// </summary>
         public void Refresh()

@@ -44,6 +44,7 @@ namespace Sterling.Core.Keys
         ///     Force to a new list so the internal one cannot be manipulated directly
         /// </summary>
         public List<TableKey<T, TKey>> Query { get { return new List<TableKey<T, TKey>>(_keyList); } }
+        public IEnumerable<TableKey<T, TKey>> EnumerableQuery { get { return this._keyList; } }
 
         private void _DeserializeKeys()
         {
