@@ -55,7 +55,6 @@ namespace Sterling.Core.Serialization
                     <Type, Dictionary<string, SerializationCache>>();
 
         private readonly Dictionary<string, Type> _typeRef = new Dictionary<string, Type>();
-
         private readonly ISterlingDatabaseInstance _database;
         private readonly ISterlingSerializer _serializer;
         private readonly LogManager _logManager;

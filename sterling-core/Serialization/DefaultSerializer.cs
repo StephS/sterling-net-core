@@ -22,8 +22,8 @@ namespace Sterling.Core.Serialization
         public DefaultSerializer()
         {
             // wire up the serialization pairs 
-            _serializers.Add( typeof(bool), new Tuple<Action<BinaryWriter, object>, Func<BinaryReader, object>>(
-                (bw,obj) => bw.Write((bool)obj),
+            _serializers.Add(typeof(bool), new Tuple<Action<BinaryWriter, object>, Func<BinaryReader, object>>(
+                (bw, obj) => bw.Write((bool)obj),
                 br => br.ReadBoolean()));
 
             _serializers.Add(typeof(byte), new Tuple<Action<BinaryWriter, object>, Func<BinaryReader, object>>(
@@ -60,6 +60,28 @@ namespace Sterling.Core.Serialization
             _serializers.Add(typeof(int), new Tuple<Action<BinaryWriter, object>, Func<BinaryReader, object>>(
                (bw, obj) => bw.Write((int)obj),
                br => br.ReadInt32()));
+
+            _serializers.Add(typeof(int[]), new Tuple<Action<BinaryWriter, object>, Func<BinaryReader, object>>(
+                  (bw, obj) =>
+                  {
+                      bw.Write(((int[])obj).Length);
+                      for (int i = 0; i < ((int[])obj).Length; i++)
+                      {
+                          bw.Write(((int[])obj)[i]);
+                      }
+                  },
+                  (br) =>
+                  {
+                      int len = br.ReadInt32();
+                      //int[] Array = len > 0 ? new int[len] : null;
+                      int[] Array = new int[len];
+                      for (int i = 0; i < len; i++)
+                      {
+                          Array[i] = br.ReadInt32();
+                      }
+                      return Array;
+                  }
+                  ));
 
             _serializers.Add(typeof(long), new Tuple<Action<BinaryWriter, object>, Func<BinaryReader, object>>(
                (bw, obj) => bw.Write((long)obj),
