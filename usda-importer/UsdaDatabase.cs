@@ -1,13 +1,13 @@
+using Sterling.Core;
 using Sterling.Core.Database;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using Sterling.Core;
+using System.Linq;
 using System.Threading;
 
 namespace UsdaSterling
 {
-    public class UsdaDatabase : BaseDatabaseInstance 
+    public class UsdaDatabase : BaseDatabaseInstance
     {
         private static SterlingEngine _engine;
         private static SterlingDefaultLogger _logger;
@@ -17,25 +17,25 @@ namespace UsdaSterling
 
         protected override List<ITableDefinition> RegisterTables()
         {
-            return new List<ITableDefinition> 
+            return new List<ITableDefinition>
             {
                 CreateTableDefinition<FoodGroup, string>(fg => fg.Code),
                 CreateTableDefinition<NutrientDefinition, string>(nd => nd.NutrientId),
                 CreateTableDefinition<FoodItem, string>(fi => fi.FoodId)
                     .WithIndex<FoodItem, string, string>(GroupIndex, fi => fi.FoodGroupId),
                 CreateTableDefinition<Nutrient, string>(n => $"{n.FoodId}|{n.NutrientId}")
-                    .WithIndex<Nutrient,double, string>(NutrientIndex, n => n.AmountInHundredGrams)
+                    .WithIndex<Nutrient, double, string>(NutrientIndex, n => n.AmountInHundredGrams)
             };
         }
 
         public static ISterlingDatabaseInstance Current { get; private set; }
 
-        public static SterlingEngine Engine 
+        public static SterlingEngine Engine
         {
-            get { return _engine; } 
+            get { return _engine; }
         }
 
-        static UsdaDatabase() 
+        static UsdaDatabase()
         {
             _logger = new SterlingDefaultLogger(SterlingLogLevel.Information);
             RestartEngine();
